@@ -6,22 +6,19 @@
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/t/deuza/staunton?style=plastic)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/deuza/staunton?style=plastic)
 
-# Échiquier - générateur de diagrammes
+# Staunton - Générateur de diagrammes de positions d'échecs 
 
-Page de saisie de position d'échecs, qui produit à la volée un diagramme au format PDF A4 ou en page HTML statique pour une étude ou un partage d'exercice. Il est possible d'utiliser n'importe quelle position fantaisiste, comme mettre 5 rois, dans ce but.
+Page de saisie de position d'échecs, qui produit à la volée un diagramme au format PDF A4 ou en page HTML statique pour une étude ou un partage d'exercice.   
+*Il est possible d'utiliser n'importe quelle position fantaisiste, comme mettre 5 rois, dans ce but.*
 
-Le gabarit de sortie contient : case de 2,4 cm, notation des lignes et colonnes de l'échiquier, ligne d'annotation sous le plateau ainsi que la position FEN.
+[!screenshot](https://github.com/deuza/staunton/blob/edaa08cf9e33c04edf84f53c1bdf114296f6ee11/images/staunton.png)
 
-<p align="center">
-  <img src="https://github.com/deuza/staunton/blob/edaa08cf9e33c04edf84f53c1bdf114296f6ee11/images/staunton.png"/>
-</p>
+Le gabarit de sortie contient : case de 2,4 cm, notation des lignes et colonnes de l'échiquier, ligne d'annotation sous le plateau ainsi que la position FEN.   
 
-Des exemples de sorties sont disponibles dans le répertoire [images/](https://github.com/deuza/staunton/tree/main/images)
+Voici un exemple d'une sortie annotée : 
+![images/morphy-mini.png](images/morphy.png)
 
-![images/morphy-mini.png](images/morphy-mini.png)
-
-Cette application n'est pas faite pour être utiliser avec un smartphone !
-Elle à été développée pour une résolution minimum de 1600x900p
+Des exemples de sorties vierges et commentées (en format HTML et PDF), sont disponibles dans le répertoire [images/ du dépôt](https://github.com/deuza/staunton/tree/main/images)
 
 ---
 
@@ -35,148 +32,120 @@ Sur Debian Trixie :
 apt install php-tcpdf php-xml curl
 ```
 
-Trois remarques :
+TCPDF glisse par défaut, en bas de la dernière page, un "Powered by TCPDF" de 1 point en mode de rendu invisible, assorti d'une annotation de lien vers tcpdf.org. 
 
-- `php-xml` n'est pas cosmétique. Sans lui, `TCPDF::ImageSVG()` part en
-  erreur fatale sur `xml_parser_create()` et aucune pièce ne s'affiche
-  dans le PDF. Il n'est pas tiré automatiquement par `php-tcpdf`.
-- Ni `dompdf` ni `mpdf` ne sont utilisés : le premier a été retiré de
-  Trixie, le second n'a jamais été empaqueté dans Debian.
-- Aucun Composer, aucun module Python, donc aucun environnement virtuel
-  à prévoir.
+Rien ne se voit, mais le texte ressort à l'extraction et le lien reste cliquable dans tout document diffusé.  
+La propriété qui commande ce comportement est protégée et sans accesseur public : `lib/sortie-pdf.php` définit donc une sous-classe `EchiquierPdf` qui l'éteint.    
+Les PDF produits ne contiennent aucune annotation de lien.
 
-TCPDF glisse par défaut, en bas de la dernière page, un « Powered by
-TCPDF » de 1 point en mode de rendu invisible, assorti d'une annotation
-de lien vers tcpdf.org. Rien ne se voit, mais le texte ressort à
-l'extraction et le lien reste cliquable dans tout document diffusé. La
-propriété qui commande ce comportement est protégée et sans accesseur
-public : `lib/sortie-pdf.php` définit donc une sous-classe `EchiquierPdf`
-qui l'éteint. Les PDF produits ne contiennent aucune annotation de lien.
-
-TCPDF inscrit aussi son adresse dans le champ `Producer`, à la fois dans
-le dictionnaire d'information et dans les métadonnées XMP. La même
-sous-classe la retire au moment de l'écriture : le champ se réduit à
-« TCPDF » suivi du numéro de version.
+TCPDF inscrit aussi son adresse dans le champ `Producer`, à la fois dans le dictionnaire d'information et dans les métadonnées XMP.   
+La même sous-classe la retire au moment de l'écriture : le champ se réduit à "TCPDF" suivi du numéro de version.
 
 ### 2. Dépendances du navigateur
 
-Bien que les pièces soient livrées dans le dépôt dans le répertoire `assets`
-, elles peuvent être rapatriées à nouveau en local par un script, afin que 
-la page tourne sans accès à Internet, y compris sur un réseau isolé :
+Bien que les pièces soient livrées dans le dépôt dans le répertoire `assets`, elles peuvent être rapatriées à nouveau en local par le script `recuperer-assets.sh`.   
+Ceci dans le but que la page tourne sans accès à Internet :
 
 ```
 sh recuperer-assets.sh
 ```
 
-Il récupère environ 270 ko : jQuery, chessboard.js, sa feuille de style,
-chess.js pour la lecture des PGN, et les douze pièces au format SVG.
+Il récupère environ 270 ko : jQuery, chessboard.js, sa feuille de style, chess.js pour la lecture des PGN, et les douze pièces au format SVG.
 
 #### Si vous souhaitez modifier ces dépendances :
 
-Les pièces sont le jeu Cburnett, celui que chessboard.js distribue en PNG
-de 80 pixels. On prend ici les SVG d'origine : même dessin, mais net à
-l'impression, et le même fichier alimente le navigateur et TCPDF. 
+Les pièces sont le jeu Cburnett, celui que chessboard.js distribue en PNG de 80 pixels.  
+On prend ici les SVG d'origine : même dessin, mais net à l'impression, et le même fichier alimente le navigateur et TCPDF.   
 Un PNG de 80 pixels étalé sur une case de 2,4 cm ne ferait que 85 ppp.
 
-Le dépôt lichess sert exactement le même jeu, déjà nommé au format 
-chessboard.js. Le commit est figé dans le script : sans cela vos pièces 
-changeraient au prochain envoi de lichess sur sa branche principale.
+Le dépôt lichess sert exactement le même jeu, déjà nommé au format chessboard.js.   
+Le commit est figé dans le script : sans cela vos pièces changeraient au prochain envoi de lichess sur sa branche principale.
 
-Si vous changez `JQUERY_VERSION` dans le script, pensez à reporter la
-même version dans la balise `<script>` de `index.php`. Il en va de même
-pour `CHESSJS_VERSION` et l'`import` du module dans `index.php`.
+Si vous changez `JQUERY_VERSION` dans le script, pensez à reporter la même version dans la balise `<script>` de `index.php`.   
+Il en va de même pour `CHESSJS_VERSION` et l'`import` du module dans `index.php`.
 
-La page de saisie lie la largeur du plateau à la hauteur de la fenêtre,
-de façon à tenir sans ascenseur dès 700 px de zone utile, ce qui couvre
-un écran 1600x900. 
+La page de saisie lie la largeur du plateau à la hauteur de la fenêtre, de façon à tenir sans ascenseur dès 700 px de zone utile, ce qui couvre un écran 1600x900. 
 
-### 3. Apache
+### 3.1 Apache
 
-Rien de particulier : un `DocumentRoot` ou un alias vers le répertoire,
-et `libapache2-mod-php` ou `php-fpm` déjà en place. Le fichier
-`lib/.htaccess` interdit l'accès direct aux inclusions, à condition que
-`AllowOverride` soit actif sur le répertoire. À défaut, reportez la même
-directive dans votre `<Directory>`.
+Rien de particulier : un `DocumentRoot` ou un alias vers le répertoire, et `libapache2-mod-php` ou `php-fpm` déjà en place.   
+Le fichier `lib/.htaccess` interdit l'accès direct aux inclusions, à condition que `AllowOverride` soit actif sur le répertoire.   
+A défaut, reportez la même directive dans votre `<Directory>`.
 
-Le script `recuperer-assets.sh` n'a rien à faire dans un répertoire servi
-en HTTP une fois qu'il a tourné. Vous pouvez le déplacer ou le supprimer.
+### 3.2 Nginx
+
+Le script `recuperer-assets.sh` n'a rien à faire dans un répertoire servi en HTTP une fois qu'il a tourné. Vous pouvez le déplacer ou le supprimer.
 
 ---
 
 ## Utilisation
 
-Glissez une pièce depuis l'une des deux palettes vers une case. Pour
-retirer une pièce, cliquez dessus sans la déplacer, ou faites-la glisser
-hors du plateau.
+Glissez une pièce depuis l'une des deux palettes vers une case.   
+Pour retirer une pièce, cliquez dessus sans la déplacer, ou faites-la glisser hors du plateau.
 
-Le champ de chargement accepte aussi bien un FEN complet à six champs,
-tel qu'on le copie depuis Lichess, que le placement seul. Dans le premier
-cas le trait se cale automatiquement sur le deuxième champ. Un FEN refusé
-laisse le plateau intact et affiche la raison sous le champ.
+Le champ de chargement accepte aussi bien un FEN complet à six champs, une ligne PGN ou le placement à la main.   
 
-Le même champ accepte une partie au format PGN, en-têtes compris. Les
-commentaires, variantes et annotations de pendule de Lichess sont admis,
-ainsi qu'un en-tête `[FEN]` pour une partie qui ne part pas de la
-position initiale. La position finale s'affiche, et quatre boutons
-permettent ensuite de remonter la partie coup par coup pour choisir le
-diagramme voulu, le trait suivant la navigation. Si le texte contient
-plusieurs parties, seule la première est lue. La touche Entrée charge,
-Maj+Entrée insère un saut de ligne.
+Dans le premier cas le trait se cale automatiquement sur le deuxième champ.   
+Un FEN refusé laisse le plateau intact et affiche la raison sous le champ.
 
-Contrairement au FEN, un PGN passe par chess.js, qui vérifie la légalité
-de chaque coup : un coup impossible est refusé avec son libellé, et le
-plateau reste intact.
+Le même champ accepte une partie au format PGN, en-têtes compris.  
+Les commentaires, variantes et annotations de pendule de Lichess sont admis, ainsi qu'un en-tête `[FEN]` pour une partie qui ne part pas de la position initiale.   
 
-Le trait est indiqué sous le plateau, aligné à droite, avec une pastille
-ronde reprenant la convention des recueils de problèmes : pleine pour les
-Noirs, vide et cerclée pour les Blancs.
+La position finale s'affiche, et quatre boutons permettent ensuite de remonter la partie coup par coup pour choisir le diagramme voulu, le trait suivant la navigation.   
 
-L'annotation est plafonnée à 288 caractères. Le chiffre est mesuré, pas
-choisi : c'est le plus grand nombre de caractères qui tienne dans les
-sept lignes disponibles sous le plateau, pour le pire caractère qui
-puisse atteindre le PDF. Rien n'est jamais tronqué, le champ refuse
-simplement la frappe suivante.
+Si le texte contient plusieurs parties, seule la première est lue.   
+La touche Entrée charge, Maj+Entrée insère un saut de ligne.
 
-Le formulaire s'ouvre dans un nouvel onglet. La page de saisie reste donc
-intacte, et vous pouvez enchaîner une sortie PDF puis une sortie HTML sans
-avoir à reconstruire la position.
+Contrairement au FEN, un PGN passe par chess.js, qui vérifie la légalité de chaque coup : un coup impossible est refusé avec son libellé, et le plateau reste intact.
 
-Rien n'est stocké côté serveur : ni fichier, ni session, ni base de
-données. Les paramètres `fen`, `trait` et `notes` restent acceptés en GET,
-ce qui permet de revenir à une position depuis le FEN imprimé en bas
-d'une feuille papier. Un `fen` invalide dans l'URL est signalé par un
-bandeau plutôt qu'ignoré en silence.
+Le trait est indiqué sous le plateau, aligné à droite, avec une pastille ronde reprenant la convention des recueils de problèmes :  
+- Pleine pour les Noirs, vide et cerclée pour les Blancs.
+
+L'annotation est plafonnée à 288 caractères.   
+Le chiffre est mesuré, pas choisi : c'est le plus grand nombre de caractères qui tienne dans les sept lignes disponibles sous le plateau, pour le pire caractère qui puisse atteindre le PDF.    
+
+Rien n'est jamais tronqué, le champ refuse simplement la frappe suivante.
+
+Le diagramme généré s'ouvre dans un nouvel onglet.   
+La page de saisie reste donc intacte, et vous pouvez enchaîner une sortie PDF puis une sortie HTML sans avoir à reconstruire la position.
+Ou modifier la position et refaire une génération.
+
+**Rien n'est stocké côté serveur : ni fichier, ni session, ni base de données.**   
+
+Les paramètres `fen`, `trait` et `notes` restent acceptés en GET, ce qui permet de revenir à une position depuis le FEN imprimé en bas d'une feuille papier.  
+Un `fen` invalide dans l'URL est signalé par un bandeau plutôt qu'ignoré en silence.
 
 ### À propos de l'impression HTML
 
-La fonction PDF est dédiée à l'impression, si vous souhaitez quand même
-imprimer une page web : 
+La fonction PDF est dédiée à l'impression, si vous souhaitez quand même imprimer une page web : 
 
-La feuille fait 20,4 cm de large sur une A4 de 21 cm. Réglez la boîte de
-dialogue d'impression sur des marges par défaut ou nulles, sans mise à
-l'échelle, faute de quoi le navigateur réduira le diagramme et la case ne
+La feuille fait 20,4 cm de large sur une A4 de 21 cm.   
+Réglez la boîte de dialogue d'impression sur des marges par défaut ou nulles, sans mise à l'échelle, faute de quoi le navigateur réduira le diagramme et la case ne
 fera plus 2,4 cm.
 
 ---
 
 ## Organisation des fichiers
 
-```
-index.php                page de saisie
-generer.php              aiguillage POST vers la sortie choisie
-app.js                   pilotage du plateau côté navigateur
-style.css                habillage de la page de saisie
+| Fichier                  | Rôle                                                    |
+|--------------------------|----------------------------------------------------------|
+| `index.php`              | page de saisie                                          |
+| `generer.php`            | aiguillage POST vers la sortie choisie                  |
+| `app.js`                 | pilotage du plateau côté navigateur                     |
+| `style.css`              | habillage de la page de saisie                          |
+|                          |                                                            |
+| `lib/echiquier.php`      | géométrie, validation FEN, nettoyage des entrées        |
+| `lib/sortie-pdf.php`     | rendu TCPDF                                             |
+| `lib/sortie-html.php`    | rendu HTML autonome                                     |
+| `lib/.htaccess`          | refus d'accès direct aux inclusions                     |
+|                          |                                                            |
+| `recuperer-assets.sh`    | récupération des dépendances du navigateur              |
+| `assets/`                | jQuery, chessboard.js, chess.js, les douze pièces SVG   |
+|                          |                                                            |
+| `lib/test.php`           | contrôles de non-régression, php-cli pur                |
+|                          |                                                            |
+| `images`                 | screenshot et sorties d'exemples, vierges et commentés  |
 
-lib/echiquier.php        géométrie, validation FEN, nettoyage des entrées
-lib/sortie-pdf.php       rendu TCPDF
-lib/sortie-html.php      rendu HTML autonome
-lib/.htaccess            refus d'accès direct aux inclusions
-
-recuperer-assets.sh      récupération des dépendances du navigateur
-assets/                  jQuery, chessboard.js, chess.js, les douze pièces SVG
-
-lib/test.php             contrôles de non-régression, php-cli pur
-```
 
 ---
 
@@ -186,9 +155,8 @@ lib/test.php             contrôles de non-régression, php-cli pur
 php lib/test.php
 ```
 
-104 contrôles, aucune dépendance : ni Composer, ni Node, ni jsdom. Le
-script renvoie 0 si tout passe et 1 sinon, il s'emploie donc tel quel
-dans un crochet git ou une tâche planifiée.
+113 contrôles sans aucune dépendance. 
+Le script renvoie 0 si tout passe et 1 sinon, il s'emploie donc tel quel dans un crochet git ou une tâche planifiée.
 
 Ce qu'il couvre :
 
@@ -209,8 +177,7 @@ Ce qu'il couvre :
 - sortie PDF : en-tête, page unique, absence d'annotation de lien et
   d'adresse dans les métadonnées, cohérence de la longueur du flux XMP
 
-Ces tests sont utilisés par l'application pour garantir son fonctionnement 
-et la sécurité du champ d'entrée du FEN.
+Ces tests sont utilisés par l'application pour garantir son fonctionnement et la sécurité du champ d'entrée du FEN.
 
 ## Licences
 
@@ -218,7 +185,6 @@ et la sécurité du champ d'entrée du FEN.
 - jQuery 3.7.1, MIT.
 - chess.js 1.4.0, Jeff Hlywa, BSD-2-Clause.
 - Pièces Cburnett, récupérées depuis le dépôt lichess, CC BY-SA 3.0.
-- Le reste du code de ce répertoire est en CC-0 : 
-Faites en ce que vous voulez :)
+- Le reste du code de ce répertoire est en CC-0 : Faites en ce que vous voulez :)
 
 <p align="center">With ❤️ by <a href="https://github.com/deuza">DeuZa</a></p>
