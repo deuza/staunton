@@ -9,16 +9,17 @@
 # Staunton - Générateur de diagrammes de positions d'échecs 
 
 Page de saisie de position d'échecs, qui produit à la volée un diagramme au format PDF A4 ou en page HTML statique pour une étude ou un partage d'exercice.   
-*Il est possible d'utiliser n'importe quelle position fantaisiste, comme mettre 5 rois, dans ce but.*
 
-[!screenshot](https://github.com/deuza/staunton/blob/edaa08cf9e33c04edf84f53c1bdf114296f6ee11/images/staunton.png)
+*Il est donc possible d'utiliser n'importe quelle position fantaisiste, comme mettre 5 rois, dans ce but.*
+
+![screenshot](https://github.com/deuza/staunton/blob/934976460b53ddddbfda378a891432c1b4e4aa0e/images/staunton.png)
 
 Le gabarit de sortie contient : case de 2,4 cm, notation des lignes et colonnes de l'échiquier, ligne d'annotation sous le plateau ainsi que la position FEN.   
 
-Voici un exemple d'une sortie annotée : 
-![images/morphy-mini.png](images/morphy.png)
+Voici un exemple d'une sortie annotée :   
+![./images/morphy.png](https://github.com/deuza/staunton/blob/934976460b53ddddbfda378a891432c1b4e4aa0e/images/morphy-mini.png)
 
-Des exemples de sorties vierges et commentées (en format HTML et PDF), sont disponibles dans le répertoire [images/ du dépôt](https://github.com/deuza/staunton/tree/main/images)
+Des exemples de sorties (vierges et commentées) au format HTML et PDF, sont disponibles dans le répertoire [images/ du dépôt](https://github.com/deuza/staunton/tree/main/images)
 
 ---
 
@@ -34,23 +35,24 @@ apt install php-tcpdf php-xml curl
 
 TCPDF glisse par défaut, en bas de la dernière page, un "Powered by TCPDF" de 1 point en mode de rendu invisible, assorti d'une annotation de lien vers tcpdf.org. 
 
-Rien ne se voit, mais le texte ressort à l'extraction et le lien reste cliquable dans tout document diffusé.  
-La propriété qui commande ce comportement est protégée et sans accesseur public : `lib/sortie-pdf.php` définit donc une sous-classe `EchiquierPdf` qui l'éteint.    
-Les PDF produits ne contiennent aucune annotation de lien.
+Rien ne se voit, mais le texte ressort à l'extraction et le lien reste cliquable dans tout document diffusé.   
+La propriété qui commande ce comportement est protégée et sans accesseur public : `lib/sortie-pdf.php` définit donc une sous-classe `EchiquierPdf` qui l'éteint.
 
-TCPDF inscrit aussi son adresse dans le champ `Producer`, à la fois dans le dictionnaire d'information et dans les métadonnées XMP.   
+TCPDF inscrit aussi son adresse dans le champ `Producer`, à la fois dans le dictionnaire d'information et dans les métadonnées XMP.    
 La même sous-classe la retire au moment de l'écriture : le champ se réduit à "TCPDF" suivi du numéro de version.
 
 ### 2. Dépendances du navigateur
 
 Bien que les pièces soient livrées dans le dépôt dans le répertoire `assets`, elles peuvent être rapatriées à nouveau en local par le script `recuperer-assets.sh`.   
+
 Ceci dans le but que la page tourne sans accès à Internet :
 
 ```
 sh recuperer-assets.sh
 ```
 
-Il récupère environ 270 ko : jQuery, chessboard.js, sa feuille de style, chess.js pour la lecture des PGN, et les douze pièces au format SVG.
+Il récupère environ 270 ko : jQuery, chessboard.js, sa feuille de style, chess.js pour la lecture des PGN, et les douze pièces au format SVG.    
+Il utilise uniquement `curl` pour les récupérer.
 
 #### Si vous souhaitez modifier ces dépendances :
 
@@ -70,6 +72,7 @@ La page de saisie lie la largeur du plateau à la hauteur de la fenêtre, de fa�
 
 Rien de particulier : un `DocumentRoot` ou un alias vers le répertoire, et `libapache2-mod-php` ou `php-fpm` déjà en place.   
 Le fichier `lib/.htaccess` interdit l'accès direct aux inclusions, à condition que `AllowOverride` soit actif sur le répertoire.   
+
 A défaut, reportez la même directive dans votre `<Directory>`.
 
 ### 3.2 Nginx
@@ -133,19 +136,18 @@ fera plus 2,4 cm.
 | `generer.php`            | aiguillage POST vers la sortie choisie                  |
 | `app.js`                 | pilotage du plateau côté navigateur                     |
 | `style.css`              | habillage de la page de saisie                          |
-|                          |                                                            |
+|                          |                                                         |                          |                                      
 | `lib/echiquier.php`      | géométrie, validation FEN, nettoyage des entrées        |
 | `lib/sortie-pdf.php`     | rendu TCPDF                                             |
 | `lib/sortie-html.php`    | rendu HTML autonome                                     |
 | `lib/.htaccess`          | refus d'accès direct aux inclusions                     |
-|                          |                                                            |
+|                          |                                                         |
 | `recuperer-assets.sh`    | récupération des dépendances du navigateur              |
 | `assets/`                | jQuery, chessboard.js, chess.js, les douze pièces SVG   |
-|                          |                                                            |
-| `lib/test.php`           | contrôles de non-régression, php-cli pur                |
-|                          |                                                            |
+|                          |                                                         |
+| `lib/test.php`           | 113 contrôles de non-régression, php-cli pur            |
+|                          |                                                         |
 | `images`                 | screenshot et sorties d'exemples, vierges et commentés  |
-
 
 ---
 
@@ -155,27 +157,19 @@ fera plus 2,4 cm.
 php lib/test.php
 ```
 
-113 contrôles sans aucune dépendance. 
-Le script renvoie 0 si tout passe et 1 sinon, il s'emploie donc tel quel dans un crochet git ou une tâche planifiée.
+113 contrôles d'intégrité sans aucune dépendance.    
+Le script renvoie 0 si tout passe et 1 sinon (il peut s'employer tel quel ou dans un crochet git ou après une modification du code source).
 
 Ce qu'il couvre :
 
-- validation du placement, cas légitimes et structures cassées
-- quinze charges hostiles : traversées de répertoire simples, profondes,
-  doublées, encodées une et deux fois, chemins absolus, antislashes,
-  wrappers `php://` `data://` `file://`, substitution shell, octet nul,
-  saut de ligne final
-- résolution du chemin des pièces, seul point du code qui touche le
-  disque, avec ses propres charges hostiles
-- conversion en grille et parité des cases, pour que personne ne
-  réintroduise le bug de la a1 claire
-- géométrie du gabarit, comparée aux valeurs du PDF ReportLab d'origine
-- nettoyage de l'annotation : UTF-8 invalide, caractères de contrôle,
-  espace insécable, troncature comptée en points de code
-- sortie HTML : nombre de cases, trait annoncé, pastille ronde, coupure
-  des mots longs, échappement des balises, absence de tout lien
-- sortie PDF : en-tête, page unique, absence d'annotation de lien et
-  d'adresse dans les métadonnées, cohérence de la longueur du flux XMP
+- Validation du placement, cas légitimes et structures cassées.
+- Quinze charges hostiles : traversées de répertoire simples, profondes, doublées, encodées une et deux fois, chemins absolus, antislashes, wrappers `php://` `data://` `file://`, substitution shell, octet nul, saut de ligne final.
+- Résolution du chemin des pièces, seul point du code qui touche le disque, avec ses propres charges hostiles.
+- Conversion en grille et parité des cases, pour éviter le bug de la case a1 claire (inversion de l'échiquier). 
+- Géométrie du gabarit, comparée aux valeurs du PDF ReportLab d'origine.
+- Nettoyage de l'annotation : UTF-8 invalide, caractères de contrôle, espace insécable, troncature comptée en points de code.
+- Sortie HTML : nombre de cases, trait annoncé, pastille ronde, coupure des mots longs, échappement des balises, absence de tout lien.
+- Sortie PDF : en-tête, page unique, absence d'annotation de lien et d'adresse dans les métadonnées, cohérence de la longueur du flux XMP.
 
 Ces tests sont utilisés par l'application pour garantir son fonctionnement et la sécurité du champ d'entrée du FEN.
 
