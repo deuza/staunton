@@ -18,6 +18,8 @@ Le gabarit de sortie contient : case de 2,4 cm, notation des lignes et colonnes 
 
 Des exemples de sorties sont disponibles dans le répertoire [images/](https://github.com/deuza/staunton/tree/main/images)
 
+![images/morphy-mini.png](images/morphy-mini.png)
+
 Cette application n'est pas faite pour être utiliser avec un smartphone !
 Elle à été développée pour une résolution minimum de 1600x900p
 
