@@ -8,20 +8,18 @@
 
 # Échiquier - générateur de diagrammes
 
-Page de saisie de position d'échecs, qui produit à la volée un diagramme
-au format PDF A4 ou en page HTML statique pour une étude ou un partage
-d'exercice. Il est possible de mettre 5 rois dans ce but.
+Page de saisie de position d'échecs, qui produit à la volée un diagramme au format PDF A4 ou en page HTML statique pour une étude ou un partage d'exercice. Il est possible d'utiliser n'importe quelle position fantaisiste, comme mettre 5 rois, dans ce but.
 
-Le gabarit de sortie contient : case de 2,4 cm, cases foncées en gris 0,80, a1 foncée,
-notation sur les quatre côtés, ligne d'annotation sous le plateau.
+Le gabarit de sortie contient : case de 2,4 cm, notation des lignes et colonnes de l'échiquier, ligne d'annotation sous le plateau ainsi que la position FEN.
 
 <p align="center">
-  <img src="https://github.com/deuza/staunton/images/apercu-page-saisie.png"/>
+  <img src="https://github.com/deuza/staunton/blob/edaa08cf9e33c04edf84f53c1bdf114296f6ee11/images/staunton.png"/>
 </p>
 
 Des exemples de sorties sont disponibles dans le répertoire [images/](https://github.com/deuza/staunton/tree/main/images)
 
-Cette application n'est pas faite pour tourner sur un smartphone !
+Cette application n'est pas faite pour être utiliser avec un smartphone !
+Elle à été développée pour une résolution minimum de 1600x900p
 
 ---
 
@@ -57,9 +55,6 @@ TCPDF inscrit aussi son adresse dans le champ `Producer`, à la fois dans
 le dictionnaire d'information et dans les métadonnées XMP. La même
 sous-classe la retire au moment de l'écriture : le champ se réduit à
 « TCPDF » suivi du numéro de version.
-
-De son côté, la page HTML exportée ne contient aucun lien (ni favicon, ni
-`href`, ni `src`) : rien n'y renvoie à la machine qui l'a produite.
 
 ### 2. Dépendances du navigateur
 
