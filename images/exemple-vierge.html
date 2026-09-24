@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diagramme</title>
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    padding: 1.2cm;
+    background: #fff;
+    color: #000;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+/* Bloc unique, centre, qui sert de reference a tout le reste. */
+.feuille { width: 20.4cm; margin: 0 auto; }
+
+.plateau { border-collapse: collapse; }
+.plateau td { padding: 0; margin: 0; }
+
+.case {
+    width:  2.4cm;
+    height: 2.4cm;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.claire { background: #fff; }
+.foncee { background: #ccc; }
+
+/* Cadre exterieur du plateau. */
+.bhaut   { border-top:    1.2pt solid #000; }
+.bbas    { border-bottom: 1.2pt solid #000; }
+.bgauche { border-left:   1.2pt solid #000; }
+.bdroite { border-right:  1.2pt solid #000; }
+
+.coin { width: 0.6cm; height: 0.6cm; }
+
+.reperecol {
+    width:  2.4cm;
+    height: 0.6cm;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 11pt;
+}
+
+.reperelig {
+    width:  0.6cm;
+    height: 2.4cm;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 11pt;
+}
+
+.piece {
+    display: block;
+    width:  2.064cm;
+    height: 2.064cm;
+    margin: 0 auto;
+}
+
+/* Le retrait aligne le texte sur le bord gauche du plateau, et non sur
+   la gouttiere de notation, exactement comme dans le PDF. */
+.notes {
+    padding-left: 0.6cm;
+    padding-right: 0.6cm;
+    margin: 1.1cm 0 0;
+    font-size: 11pt;
+    line-height: 1.35;
+    color: #666;
+
+    /* MultiCell coupe de force un mot trop long dans le PDF. Sans cette
+       regle le HTML ne le ferait pas, et une annotation depourvue
+       d'espaces s'echapperait de la page sur une seule ligne. */
+    overflow-wrap: break-word;
+    overflow-wrap: anywhere;
+}
+
+/* Trait, aligne sur le bord droit du plateau. La pastille est un rond,
+   selon la convention des recueils de problemes : plein pour les Noirs,
+   vide et cercle pour les Blancs. */
+.trait {
+    padding-right: 0.6cm;
+    margin: 0.55cm 0 0;
+    font-size: 10pt;
+    text-align: right;
+}
+
+.pastille {
+    display: inline-block;
+    width: 0.30cm;
+    height: 0.30cm;
+    margin-right: 0.18cm;
+    border: 0.8pt solid #000;
+    border-radius: 50%;
+    vertical-align: baseline;
+}
+
+.pastille-noirs  { background: #000; }
+.pastille-blancs { background: #fff; }
+
+.fen {
+    padding-left: 0.6cm;
+    margin: 0.6cm 0 0;
+    font-family: "DejaVu Sans Mono", Courier, monospace;
+    font-size: 10pt;
+    color: #000;
+    word-break: break-all;
+}
+
+/*
+ * Marges laterales reduites : la feuille fait deja 20.4cm de large, il
+ * ne reste que quelques millimetres de chaque cote sur une A4. Pensez a
+ * regler la boite de dialogue d'impression sur des marges par defaut ou
+ * nulles, faute de quoi le navigateur reduira l'echelle et la case ne
+ * fera plus 2.4cm.
+ */
+@page { size: A4 portrait; margin: 0.8cm 0.3cm; }
+
+@media print {
+    body { padding: 0; }
+    /* Sans cela, plusieurs navigateurs suppriment les aplats gris. */
+    .foncee,
+    .pastille-noirs {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="feuille">
+
+<table class="plateau">
+<tr><td class="coin"></td><td class="reperecol">a</td><td class="reperecol">b</td><td class="reperecol">c</td><td class="reperecol">d</td><td class="reperecol">e</td><td class="reperecol">f</td><td class="reperecol">g</td><td class="reperecol">h</td><td class="coin"></td></tr>
+<tr><td class="reperelig">8</td><td class="case claire bhaut bgauche"></td><td class="case foncee bhaut"></td><td class="case claire bhaut"></td><td class="case foncee bhaut"></td><td class="case claire bhaut"></td><td class="case foncee bhaut"></td><td class="case claire bhaut"></td><td class="case foncee bhaut bdroite"></td><td class="reperelig">8</td></tr>
+<tr><td class="reperelig">7</td><td class="case foncee bgauche"></td><td class="case claire"></td><td class="case foncee"></td><td class="case claire"></td><td class="case foncee"></td><td class="case claire"></td><td class="case foncee"></td><td class="case claire bdroite"></td><td class="reperelig">7</td></tr>
+<tr><td class="reperelig">6</td><td class="case claire bgauche"></td><td class="case foncee"></td><td class="case claire"></td><td class="case foncee"></td><td class="case claire"></td><td class="case foncee"></td><td class="case claire"></td><td class="case foncee bdroite"></td><td class="reperelig">6</td></tr>
+<tr><td class="reperelig">5</td><td class="case foncee bgauche"></td><td class="case claire"></td><td class="case foncee"></td><td class="case claire"></td><td class="case foncee"></td><td class="case claire"></td><td class="case foncee"></td><td class="case claire bdroite"></td><td class="reperelig">5</td></tr>
+<tr><td class="reperelig">4</td><td class="case claire bgauche"></td><td class="case foncee"></td><td class="case claire"></td><td class="case foncee"></td><td class="case claire"></td><td class="case foncee"></td><td class="case claire"></td><td class="case foncee bdroite"></td><td class="reperelig">4</td></tr>
+<tr><td class="reperelig">3</td><td class="case foncee bgauche"></td><td class="case claire"></td><td class="case foncee"></td><td class="case claire"></td><td class="case foncee"></td><td class="case claire"></td><td class="case foncee"></td><td class="case claire bdroite"></td><td class="reperelig">3</td></tr>
+<tr><td class="reperelig">2</td><td class="case claire bgauche"></td><td class="case foncee"></td><td class="case claire"></td><td class="case foncee"></td><td class="case claire"></td><td class="case foncee"></td><td class="case claire"></td><td class="case foncee bdroite"></td><td class="reperelig">2</td></tr>
+<tr><td class="reperelig">1</td><td class="case foncee bbas bgauche"></td><td class="case claire bbas"></td><td class="case foncee bbas"></td><td class="case claire bbas"></td><td class="case foncee bbas"></td><td class="case claire bbas"></td><td class="case foncee bbas"></td><td class="case claire bbas bdroite"></td><td class="reperelig">1</td></tr>
+<tr><td class="coin"></td><td class="reperecol">a</td><td class="reperecol">b</td><td class="reperecol">c</td><td class="reperecol">d</td><td class="reperecol">e</td><td class="reperecol">f</td><td class="reperecol">g</td><td class="reperecol">h</td><td class="coin"></td></tr>
+</table>
+
+<p class="trait"><span class="pastille pastille-blancs"></span>Trait aux Blancs</p>
+
+<p class="notes">Position / notes : ______________________________________</p>
+<p class="fen">FEN : 8/8/8/8/8/8/8/8 w - - 0 1</p>
+
+</div>
+
+</body>
+</html>

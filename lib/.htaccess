@@ -1,0 +1,3 @@
+# Ces fichiers sont des inclusions, jamais des points d'entree.
+# Syntaxe Apache 2.4 ; necessite AllowOverride sur le repertoire parent.
+Require all denied

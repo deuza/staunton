@@ -1,0 +1,412 @@
+/*
+ * style.css - habillage de la page de saisie.
+ *
+ * La grammaire visuelle est reprise de mat-en-web : fond en degrade,
+ * cartes blanches a coins arrondis et ombre portee, boutons colores.
+ *
+ * Elle ne concerne QUE cette page. Les diagrammes exportes gardent leur
+ * gabarit sobre, cases grises et A4, parce qu'ils sont faits pour etre
+ * imprimes et que le brun de l'ecran sortirait en gris sale sur une
+ * imprimante noir et blanc.
+ *
+ * Les couleurs du plateau lui-meme ne sont pas definies ici : le brun
+ * #b58863 et le creme #f0d9b5 sont les valeurs natives de
+ * chessboard-1.0.0.min.css, il n'y a rien a surcharger.
+ */
+
+:root {
+    --primaire:   #2c3e50;
+    --info:       #3498db;
+    --succes:     #27ae60;
+    --danger:     #e74c3c;
+    --avert:      #f39c12;
+    --bordure:    #bdc3c7;
+    --texte:      #2c3e50;
+    --texte-pale: #7f8c8d;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/*
+ * Marges verticales resserrees (12 px au lieu de 20) : la page doit tenir
+ * sans ascenseur sur un ecran 1600x900, y compris avec la mise a l'echelle
+ * Windows a 125 %, ou la fenetre utile tombe vers 1280x600 px CSS.
+ */
+body {
+    min-height: 100vh;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: var(--texte);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                 "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+/* --------------------------------------------------------------- */
+/* En-tete                                                          */
+/* --------------------------------------------------------------- */
+
+.entete {
+    max-width: 1180px;
+    margin: 0 auto 12px;
+    color: #fff;
+    text-align: center;
+}
+
+.entete h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.entete p {
+    opacity: 0.9;
+    font-size: 0.95rem;
+}
+
+/* --------------------------------------------------------------- */
+/* Bandeau d'alerte                                                 */
+/* --------------------------------------------------------------- */
+
+.alerte {
+    max-width: 1180px;
+    margin: 0 auto 20px;
+    padding: 12px 18px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: #fff;
+    font-weight: 600;
+    text-align: center;
+}
+
+.alerte-avertissement { background: var(--avert); }
+
+/* --------------------------------------------------------------- */
+/* Mise en page generale                                            */
+/* --------------------------------------------------------------- */
+
+/*
+ * align-items: stretch donne aux deux cartes la meme hauteur : leurs bords
+ * haut et bas sont alignes, quelle que soit la taille du plateau.
+ */
+.conteneur {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: stretch;
+    justify-content: center;
+    max-width: 1180px;
+    margin: 0 auto;
+}
+
+.carte {
+    padding: 16px 20px;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.panneau {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 340px;
+    max-width: 100%;
+}
+
+/* --------------------------------------------------------------- */
+/* Plateau et coordonnees exterieures                               */
+/* --------------------------------------------------------------- */
+
+/*
+ * Le cadre sert de repere de positionnement aux coordonnees : il est le
+ * premier ancetre positionne, donc celui auquel se rapportent les
+ * offsetTop et offsetLeft lus dans app.js.
+ */
+.plateau-cadre {
+    position: relative;
+    padding-left: 1.7rem;
+}
+
+/*
+ * La largeur du plateau suit la hauteur de la fenetre, ce qui evite
+ * l'ascenseur sur un ecran peu haut.
+ *
+ * Le coefficient vient du bilan vertical de la page : en-tete, marges et
+ * barre de boutons occupent environ 225 px, et le bloc du plateau vaut a
+ * peu pres 1,25 fois sa largeur, palettes et gouttiere comprises. D'ou
+ * une largeur utile de 0,8 vh moins 220 px, bornee a 460 px en haut et a
+ * 280 px en bas.
+ *
+ * app.js rappelle board.resize() au redimensionnement, la taille des
+ * cases suit donc.
+ */
+#plateau {
+    width: clamp(280px, calc(80vh - 220px), 460px);
+    max-width: 100%;
+}
+
+/*
+ * chessboard.js colle la palette du bas contre le plateau. On ecarte les
+ * deux pour degager la bande ou se posent les lettres de colonne, sinon
+ * les pieces de la palette passent par-dessus.
+ *
+ * Le selecteur vise la sous-chaine du nom de classe : chessboard.js y
+ * accole un suffixe qui lui est propre, autant ne pas le figer ici.
+ */
+#plateau [class*="spare-pieces-bottom"] {
+    margin-top: 1.7rem;
+}
+
+.reperes {
+    position: absolute;
+    display: flex;
+    color: var(--texte);
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.reperes span {
+    display: flex;
+    flex: 1 1 0;
+    align-items: center;
+    justify-content: center;
+}
+
+.reperes-rangs {
+    left: 0;
+    width: 1.7rem;
+    flex-direction: column;
+}
+
+.reperes-colonnes {
+    height: 1.6rem;
+    flex-direction: row;
+}
+
+.carte-plateau { flex: 0 0 auto; }
+
+.barre {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+/*
+ * Mode d'emploi du plateau, dans une carte a droite du formulaire. Il ne
+ * s'etire pas sur toute la hauteur de la rangee : align-self l'aligne sur
+ * le haut des deux autres cartes, a la hauteur du plateau. Son titre
+ * reprend le style des intitules du formulaire (.bloc h2).
+ */
+.carte-aide {
+    flex: 0 0 220px;
+    align-self: flex-start;
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+.carte-aide h2 {
+    margin-bottom: 8px;
+    color: var(--primaire);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+/* --------------------------------------------------------------- */
+/* Formulaire                                                       */
+/* --------------------------------------------------------------- */
+
+.bloc h2 {
+    margin-bottom: 8px;
+    color: var(--primaire);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.ligne {
+    display: flex;
+    gap: 8px;
+}
+
+.ligne input[type="text"],
+.ligne textarea { flex: 1 1 auto; min-width: 0; }
+
+/* Le bouton reste en haut quand la zone de collage s'agrandit. */
+.ligne { align-items: flex-start; }
+
+input[type="text"],
+textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--bordure);
+    border-radius: 6px;
+    background: #fff;
+    color: inherit;
+    font: inherit;
+}
+
+input[type="text"]:focus,
+textarea:focus {
+    border-color: var(--info);
+    outline: none;
+}
+
+textarea {
+    resize: vertical;
+    font-size: 0.9rem;
+}
+
+#fen-colle {
+    font-family: "DejaVu Sans Mono", Consolas, monospace;
+    font-size: 0.8rem;
+}
+
+.compteur {
+    margin-top: 4px;
+    color: var(--texte-pale);
+    font-size: 0.78rem;
+    text-align: right;
+}
+
+.compteur-plein { color: var(--danger); font-weight: 600; }
+
+.message {
+    min-height: 1.2em;
+    margin-top: 6px;
+    font-size: 0.82rem;
+}
+
+.message.succes { color: var(--succes); }
+.message.erreur { color: var(--danger); }
+
+/*
+ * Navigation dans une partie PGN. L'attribut hidden doit l'emporter sur
+ * le display: flex, d'ou la regle explicite.
+ */
+.navigation {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-top: 6px;
+}
+
+.navigation[hidden] { display: none; }
+
+.navigation .bouton {
+    padding: 5px 11px;
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.navigation .bouton:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.coup {
+    margin-left: 6px;
+    font-family: "DejaVu Sans Mono", Consolas, monospace;
+    font-size: 0.82rem;
+}
+
+.choix {
+    display: flex;
+    gap: 18px;
+}
+
+.choix label {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* --------------------------------------------------------------- */
+/* Boutons                                                          */
+/* --------------------------------------------------------------- */
+
+.bouton {
+    padding: 9px 16px;
+    border: none;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: #fff;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: box-shadow 0.15s, filter 0.15s;
+}
+
+.bouton:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    filter: brightness(1.08);
+}
+
+.bouton-succes { background: var(--succes); }
+.bouton-info   { background: var(--info); }
+.bouton-danger { background: var(--danger); }
+
+.bouton-neutre {
+    border: 1px solid var(--bordure);
+    background: #fff;
+    color: var(--texte);
+}
+
+/*
+ * Le bouton de generation est repousse en bas du panneau, a hauteur de la
+ * barre de boutons du plateau, puisque les deux cartes font la meme
+ * hauteur.
+ */
+.panneau .bouton-large { margin-top: auto; }
+
+.bouton-large {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+}
+
+/* --------------------------------------------------------------- */
+/* Petits ecrans                                                    */
+/* --------------------------------------------------------------- */
+
+/*
+ * En dessous de 1200 px les trois cartes ne tiennent plus cote a cote :
+ * le mode d'emploi passe au-dessus, sur toute la largeur. Il est place en
+ * dernier dans le HTML (a droite sur grand ecran), order le remonte ici en
+ * tete pour qu'il reste lu avant le plateau.
+ */
+@media (max-width: 1200px) {
+    .carte-aide {
+        flex-basis: 100%;
+        order: -1;
+    }
+}
+
+@media (max-width: 720px) {
+    body { padding: 12px; }
+
+    #plateau { width: 100%; }
+
+    .panneau { width: 100%; }
+
+    .plateau-cadre { padding-left: 1.3rem; }
+
+    .carte-plateau { width: 100%; }
+
+    /* Sur un ecran etroit, la hauteur cesse d'etre le facteur limitant. */
+    #plateau { width: 100%; }
+
+    .reperes-rangs    { width: 1.3rem; }
+    .reperes-colonnes { height: 1.3rem; }
+    .reperes          { font-size: 0.8rem; }
+}
