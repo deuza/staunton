@@ -136,17 +136,17 @@ fera plus 2,4 cm.
 | `generer.php`            | aiguillage POST vers la sortie choisie                  |
 | `app.js`                 | pilotage du plateau côté navigateur                     |
 | `style.css`              | habillage de la page de saisie                          |
-|                          |                                                         |                          |                                      
+|--                        |                                                         |                                                      
 | `lib/echiquier.php`      | géométrie, validation FEN, nettoyage des entrées        |
 | `lib/sortie-pdf.php`     | rendu TCPDF                                             |
 | `lib/sortie-html.php`    | rendu HTML autonome                                     |
 | `lib/.htaccess`          | refus d'accès direct aux inclusions                     |
-|                          |                                                         |
+|--                        |                                                         |
 | `recuperer-assets.sh`    | récupération des dépendances du navigateur              |
 | `assets/`                | jQuery, chessboard.js, chess.js, les douze pièces SVG   |
-|                          |                                                         |
+|--                        |                                                         |
 | `lib/test.php`           | 113 contrôles de non-régression, php-cli pur            |
-|                          |                                                         |
+|--                        |                                                         |
 | `images`                 | screenshot et sorties d'exemples, vierges et commentés  |
 
 ---
