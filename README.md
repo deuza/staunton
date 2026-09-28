@@ -12,7 +12,7 @@ Page de saisie de position d'échecs, qui produit à la volée un diagramme au f
 
 *Il est donc possible d'utiliser n'importe quelle position fantaisiste, comme mettre 5 rois, dans ce but.*
 
-![screenshot](https://github.com/deuza/staunton/blob/934976460b53ddddbfda378a891432c1b4e4aa0e/images/staunton.png)
+![screenshot](images/staunton.png)
 
 Le gabarit de sortie contient : case de 2,4 cm, notation des lignes et colonnes de l'échiquier, ligne d'annotation sous le plateau ainsi que la position FEN.   
 
