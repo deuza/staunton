@@ -17,9 +17,9 @@ Page de saisie de position d'échecs, qui produit à la volée un diagramme au f
 Le gabarit de sortie contient : case de 2,4 cm, notation des lignes et colonnes de l'échiquier, ligne d'annotation sous le plateau ainsi que la position FEN.   
 
 Voici un exemple d'une sortie annotée :   
-![./images/morphy.png](https://github.com/deuza/staunton/blob/934976460b53ddddbfda378a891432c1b4e4aa0e/images/morphy-mini.png)
+[![Morphy](images/morphy-mini.png)](images/morphy.png)
 
-Des exemples de sorties (vierges et commentées) au format HTML et PDF, sont disponibles dans le répertoire [images/ du dépôt](https://github.com/deuza/staunton/tree/main/images)
+Des exemples de sorties (vierges et commentées) au format HTML et PDF sont disponibles dans le répertoire [images/ du dépôt](https://github.com/deuza/staunton/tree/main/images)
 
 ---
 
