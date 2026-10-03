@@ -8,7 +8,7 @@
 
 # Staunton - Chess position diagram generator
 
-Set up a chess position in your browser and get, on the fly, a clean diagram: an A4 PDF ready to print, or a self-contained HTML page to share.   
+Set up a chess position in your browser and get, on the fly, a clean diagram : an A4 PDF ready to print, or a self-contained HTML page to share.
 Handy for a study sheet or an exercise.
 
 *Any position will do, even an impossible one: five kings on the board is fine.*
@@ -21,7 +21,7 @@ An annotated example :
 
 [![Morphy](images/morphy-mini.png)](images/morphy.png)
 
-More examples, blank and annotated, in HTML and PDF, are in the [images/ directory](https://github.com/deuza/staunton/tree/main/images).
+More examples, blank and annotated, and one study in HTML and PDF, are in the [images/ directory](https://github.com/deuza/staunton/tree/main/images).
 
 ---
 
@@ -39,6 +39,12 @@ More examples, blank and annotated, in HTML and PDF, are in the [images/ directo
 ---
 
 ## Installation
+
+Staunton requires only relatively common dependencies : please take the time to read this file in its entirety before you begin installing. 
+
+You'll need a Linux or FreeBSD server with Apache2 or nginx installed and properly configured if you want to make the page publicly accessible.
+
+--- 
 
 You need PHP 8.0 or later with the `ctype` and `xml` extensions, and TCPDF 6 for the PDF output.   
 Staunton is tested with PHP 8.0 to 8.5 and TCPDF 6.4.4 to 6.11.4.
@@ -64,7 +70,7 @@ composer require "tecnickcom/tcpdf:^6.9.2"
 Keep the version constraint : without it, Composer installs TCPDF 7, which Staunton does not support.   
 And keep `php85-curl` : TCPDF 6.8 and later cannot run without the PHP curl extension.
 
-### TCPDF installed elsewhere
+### TCPDF installed elsewhere :
 
 Staunton looks for TCPDF in the Debian package first, then in `vendor/` at the root of the project.   
 For any other location, give the path of `tcpdf.php`, or of Composer's `autoload.php`, in the `STAUNTON_TCPDF` environment variable, for instance in the Apache virtual host :
@@ -73,7 +79,7 @@ For any other location, give the path of `tcpdf.php`, or of Composer's `autoload
 SetEnv STAUNTON_TCPDF /path/to/tcpdf.php
 ```
 
-### Browser dependencies
+### Browser dependencies :
 
 jQuery, chessboard.js, chess.js and the pieces live in the `assets/` directory.   
 If it is missing or damaged, fetch them again:
@@ -110,7 +116,7 @@ Use `docs/nginx/staunton.conf` with nginx.
 
 [docs/hardening.md](docs/hardening.md) explains every rule of both files, how to hide the version of the server, and how the code protects itself.
 
-### Check the installation
+### Check the installation :
 
 ```
 php lib/test.php
@@ -142,7 +148,7 @@ The side to move is read from the FEN too.
 
 The PDF writes the annotation in Helvetica, which only knows the Western alphabets : Cyrillic, Greek, chess symbols (♔, ♞) or emoji show correctly in the HTML page, but come out as `?` in the PDF.
 
-### Printing the HTML page
+### Printing the HTML page :
 
 **PDF files are specifically intended for printing.**
 
