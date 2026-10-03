@@ -6,179 +6,186 @@
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/t/deuza/staunton?style=plastic)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/deuza/staunton?style=plastic)
 
-# Staunton - Générateur de diagrammes de positions d'échecs 
+# Staunton - Chess position diagram generator
 
-Page de saisie de position d'échecs, qui produit à la volée un diagramme au format PDF A4 ou en page HTML statique pour une étude ou un partage d'exercice.   
+Set up a chess position in your browser and get, on the fly, a clean diagram: an A4 PDF ready to print, or a self-contained HTML page to share. Handy for a study sheet or an exercise.
 
-*Il est donc possible d'utiliser n'importe quelle position fantaisiste, comme mettre 5 rois, dans ce but.*
+*Any position will do, even an impossible one: five kings on the board is fine.*
 
 ![screenshot](images/staunton.png)
 
-Le gabarit de sortie contient : case de 2,4 cm, notation des lignes et colonnes de l'échiquier, ligne d'annotation sous le plateau ainsi que la position FEN.   
+Each diagram has 2.4 cm squares, coordinates all around the board, the side to move, a line for your notes and the FEN of the position, so that the position can be set up again from the printed sheet.
 
-Voici un exemple d'une sortie annotée :   
+An annotated example:
+
 [![Morphy](images/morphy-mini.png)](images/morphy.png)
 
-Des exemples de sorties (vierges et commentées) au format HTML et PDF sont disponibles dans le répertoire [images/ du dépôt](https://github.com/deuza/staunton/tree/main/images)
+More examples, blank and annotated, in HTML and PDF, are in the [images/ directory](https://github.com/deuza/staunton/tree/main/images).
+
+---
+
+## Features
+
+- Drag and drop the pieces from the two palettes, remove them with a click.
+- Paste a FEN, or a whole game in PGN (Lichess exports included), then step through the moves to pick the position you want.
+- The side to move follows the FEN or the game, and can be changed by hand.
+- Options for flipping the chessboard.
+- An annotation of up to 194 characters, under the board.
+- PDF for printing, HTML for sharing: the HTML page carries everything with it, pieces included, and links to nothing.
+- Nothing is stored on the server: no file, no session, no database.
+- Works offline: all the browser dependencies are served from the project itself.
 
 ---
 
 ## Installation
 
-### 1. Dépendances système
+You need PHP 8.0 or later with the `ctype` and `xml` extensions, and TCPDF 6 for the PDF output.
+Staunton is tested with PHP 8.0 to 8.5 and TCPDF 6.4.4 to 6.11.4.
 
-Sur Debian Trixie :
+### Debian, Ubuntu
 
 ```
 apt install php-tcpdf php-xml curl
 ```
 
-TCPDF glisse par défaut, en bas de la dernière page, un "Powered by TCPDF" de 1 point en mode de rendu invisible, assorti d'une annotation de lien vers tcpdf.org. 
+### FreeBSD
 
-Rien ne se voit, mais le texte ressort à l'extraction et le lien reste cliquable dans tout document diffusé.   
-La propriété qui commande ce comportement est protégée et sans accesseur public : `lib/sortie-pdf.php` définit donc une sous-classe `EchiquierPdf` qui l'éteint.
+The instructions below follow the default PHP version of the ports (8.5). On Linux, the test suite passes under PHP 8.5 with TCPDF installed through Composer.
 
-TCPDF inscrit aussi son adresse dans le champ `Producer`, à la fois dans le dictionnaire d'information et dans les métadonnées XMP.    
-La même sous-classe la retire au moment de l'écriture : le champ se réduit à "TCPDF" suivi du numéro de version.
-
-### 2. Dépendances du navigateur
-
-Bien que les pièces soient livrées dans le dépôt dans le répertoire `assets`, elles peuvent être rapatriées à nouveau en local par le script `recuperer-assets.sh`.   
-
-Ceci dans le but que la page tourne sans accès à Internet :
+The ports tree has no TCPDF: it is installed with Composer, at the root of the project.
 
 ```
-sh recuperer-assets.sh
+pkg install php85 php85-ctype php85-xml php85-zlib php85-curl php85-composer curl
+composer require "tecnickcom/tcpdf:^6.9.2"
 ```
 
-Il récupère environ 270 ko : jQuery, chessboard.js, sa feuille de style, chess.js pour la lecture des PGN, et les douze pièces au format SVG.    
-Il utilise uniquement `curl` pour les récupérer.
+Keep the version constraint: without it, Composer installs TCPDF 7, which Staunton does not support. And keep `php85-curl`: TCPDF 6.8 and later cannot run without the PHP curl extension.
 
-#### Si vous souhaitez modifier ces dépendances :
+### TCPDF installed elsewhere
 
-Les pièces sont le jeu Cburnett, celui que chessboard.js distribue en PNG de 80 pixels.  
-On prend ici les SVG d'origine : même dessin, mais net à l'impression, et le même fichier alimente le navigateur et TCPDF.   
-Un PNG de 80 pixels étalé sur une case de 2,4 cm ne ferait que 85 ppp.
+Staunton looks for TCPDF in the Debian package first, then in `vendor/` at the root of the project. For any other location, give the path of `tcpdf.php`, or of Composer's `autoload.php`, in the `STAUNTON_TCPDF` environment variable, for instance in the Apache virtual host:
 
-Le dépôt lichess sert exactement le même jeu, déjà nommé au format chessboard.js.   
-Le commit est figé dans le script : sans cela vos pièces changeraient au prochain envoi de lichess sur sa branche principale.
+```apache
+SetEnv STAUNTON_TCPDF /path/to/tcpdf.php
+```
 
-Si vous changez `JQUERY_VERSION` dans le script, pensez à reporter la même version dans la balise `<script>` de `index.php`.   
-Il en va de même pour `CHESSJS_VERSION` et l'`import` du module dans `index.php`.
+### Browser dependencies
 
-La page de saisie lie la largeur du plateau à la hauteur de la fenêtre, de façon à tenir sans ascenseur dès 700 px de zone utile, ce qui couvre un écran 1600x900. 
+jQuery, chessboard.js, chess.js and the pieces live in the `assets/` directory. If it is missing or damaged, fetch them again:
 
-### 3.1 Apache
+```
+sh fetch-assets.sh
+```
 
-Rien de particulier : un `DocumentRoot` ou un alias vers le répertoire, et `libapache2-mod-php` ou `php-fpm` déjà en place.   
-Le fichier `lib/.htaccess` interdit l'accès direct aux inclusions, à condition que `AllowOverride` soit actif sur le répertoire.   
+The script checks every file against the checksums pinned inside it, and stops at the slightest difference. Keep it next to the code: the test suite reads those checksums, and the server configuration refuses to serve it.
 
-A défaut, reportez la même directive dans votre `<Directory>`.
+### Web server
 
-### 3.2 Nginx
+The security of an installation rests on two pillars: the code, which protects itself, and the configuration of the web server, which does what the code cannot do. It turns off directory listings, refuses `.git`, `lib/`, `vendor/` and `fetch-assets.sh`, and sends the security headers. That configuration is not optional: apply it before opening the page to others.
 
-Le script `recuperer-assets.sh` n'a rien à faire dans un répertoire servi en HTTP une fois qu'il a tourné. Vous pouvez le déplacer ou le supprimer.
+With Apache, PHP being enabled through `libapache2-mod-php` or `php-fpm`, from the root of the project:
 
----
+```
+cp docs/apache2/staunton.conf /etc/apache2/conf-available/staunton.conf
+a2enmod headers
+a2enconf staunton
+apache2ctl configtest && systemctl reload apache2
+```
 
-## Utilisation
+The file expects the project in `/var/www/html/staunton`: adjust its paths if needed. Keep `a2enmod headers` first: without that module, `configtest` stops on `Invalid command 'Header'`.
 
-Glissez une pièce depuis l'une des deux palettes vers une case.   
-Pour retirer une pièce, cliquez dessus sans la déplacer, ou faites-la glisser hors du plateau.
+Use `docs/nginx/staunton.conf` with nginx.
 
-Le champ de chargement accepte aussi bien un FEN complet à six champs, une ligne PGN ou le placement à la main.   
+[docs/hardening.md](docs/hardening.md) explains every rule of both files, how to hide the version of the server, and how the code protects itself.
 
-Dans le premier cas le trait se cale automatiquement sur le deuxième champ.   
-Un FEN refusé laisse le plateau intact et affiche la raison sous le champ.
-
-Le même champ accepte une partie au format PGN, en-têtes compris.  
-Les commentaires, variantes et annotations de pendule de Lichess sont admis, ainsi qu'un en-tête `[FEN]` pour une partie qui ne part pas de la position initiale.   
-
-La position finale s'affiche, et quatre boutons permettent ensuite de remonter la partie coup par coup pour choisir le diagramme voulu, le trait suivant la navigation.   
-
-Si le texte contient plusieurs parties, seule la première est lue.   
-La touche Entrée charge, Maj+Entrée insère un saut de ligne.
-
-Contrairement au FEN, un PGN passe par chess.js, qui vérifie la légalité de chaque coup : un coup impossible est refusé avec son libellé, et le plateau reste intact.
-
-Le trait est indiqué sous le plateau, aligné à droite, avec une pastille ronde reprenant la convention des recueils de problèmes :  
-- Pleine pour les Noirs, vide et cerclée pour les Blancs.
-
-L'annotation est plafonnée à 288 caractères.   
-Le chiffre est mesuré, pas choisi : c'est le plus grand nombre de caractères qui tienne dans les sept lignes disponibles sous le plateau, pour le pire caractère qui puisse atteindre le PDF.    
-
-Rien n'est jamais tronqué, le champ refuse simplement la frappe suivante.
-
-Le diagramme généré s'ouvre dans un nouvel onglet.   
-La page de saisie reste donc intacte, et vous pouvez enchaîner une sortie PDF puis une sortie HTML sans avoir à reconstruire la position.
-Ou modifier la position et refaire une génération.
-
-**Rien n'est stocké côté serveur : ni fichier, ni session, ni base de données.**   
-
-Les paramètres `fen`, `trait` et `notes` restent acceptés en GET, ce qui permet de revenir à une position depuis le FEN imprimé en bas d'une feuille papier.  
-Un `fen` invalide dans l'URL est signalé par un bandeau plutôt qu'ignoré en silence.
-
-### À propos de l'impression HTML
-
-La fonction PDF est dédiée à l'impression, si vous souhaitez quand même imprimer une page web : 
-
-La feuille fait 20,4 cm de large sur une A4 de 21 cm.   
-Réglez la boîte de dialogue d'impression sur des marges par défaut ou nulles, sans mise à l'échelle, faute de quoi le navigateur réduira le diagramme et la case ne
-fera plus 2,4 cm.
-
----
-
-## Organisation des fichiers
-
-| Fichier                  | Rôle                                                    |
-|--------------------------|----------------------------------------------------------|
-| `index.php`              | page de saisie                                          |
-| `generer.php`            | aiguillage POST vers la sortie choisie                  |
-| `app.js`                 | pilotage du plateau côté navigateur                     |
-| `style.css`              | habillage de la page de saisie                          |
-|--                        |                                                         |                                                      
-| `lib/echiquier.php`      | géométrie, validation FEN, nettoyage des entrées        |
-| `lib/sortie-pdf.php`     | rendu TCPDF                                             |
-| `lib/sortie-html.php`    | rendu HTML autonome                                     |
-| `lib/.htaccess`          | refus d'accès direct aux inclusions                     |
-|--                        |                                                         |
-| `recuperer-assets.sh`    | récupération des dépendances du navigateur              |
-| `assets/`                | jQuery, chessboard.js, chess.js, les douze pièces SVG   |
-|--                        |                                                         |
-| `lib/test.php`           | 113 contrôles de non-régression, php-cli pur            |
-|--                        |                                                         |
-| `images`                 | screenshot et sorties d'exemples, vierges et commentés  |
-
----
-
-## Tests
+### Check the installation
 
 ```
 php lib/test.php
 ```
 
-113 contrôles d'intégrité sans aucune dépendance.    
-Le script renvoie 0 si tout passe et 1 sinon (il peut s'employer tel quel ou dans un crochet git ou après une modification du code source).
+The test suite needs nothing else. It must end with `0 failure(s)`, and it tells which PHP and which TCPDF it found. If `assets/` lacks a file, re-run `fetch-assets.sh`.
 
-Ce qu'il couvre :
+Give it the address of the page, and it also checks the configuration of the web server:
 
-- Validation du placement, cas légitimes et structures cassées.
-- Quinze charges hostiles : traversées de répertoire simples, profondes, doublées, encodées une et deux fois, chemins absolus, antislashes, wrappers `php://` `data://` `file://`, substitution shell, octet nul, saut de ligne final.
-- Résolution du chemin des pièces, seul point du code qui touche le disque, avec ses propres charges hostiles.
-- Conversion en grille et parité des cases, pour éviter le bug de la case a1 claire (inversion de l'échiquier). 
-- Géométrie du gabarit, comparée aux valeurs du PDF ReportLab d'origine.
-- Nettoyage de l'annotation : UTF-8 invalide, caractères de contrôle, espace insécable, troncature comptée en points de code.
-- Sortie HTML : nombre de cases, trait annoncé, pastille ronde, coupure des mots longs, échappement des balises, absence de tout lien.
-- Sortie PDF : en-tête, page unique, absence d'annotation de lien et d'adresse dans les métadonnées, cohérence de la longueur du flux XMP.
+```
+php lib/test.php http://localhost/staunton/
+```
 
-Ces tests sont utilisés par l'application pour garantir son fonctionnement et la sécurité du champ d'entrée du FEN.
+---
+
+## Usage
+
+- Drag a piece from either palette onto a square. To remove a piece, click it without moving it, or drag it off the board.
+- To load a position, paste a FEN or a PGN game into the field, then press Enter or click **Load**. Text that cannot be read leaves the board untouched, and the reason is shown below the field.
+- After a PGN, four buttons step through the game, and the side to move follows. If the text holds several games, only the first one is read.
+- The diagram is drawn from Black's side when the board is flipped on the page, or when Black is to move; from White's side otherwise.
+- Type your annotation, check the side to move and the output, then click **Generate the diagram**. The diagram opens in a new tab: the input page stays as it is, ready for another output or another position.
+
+To come back to a position from a printed sheet, copy its FEN into the address of the page, for instance `index.php?fen=8/8/8/4k3/8/8/8/4K3 b - - 0 1`. The side to move is read from the FEN too.
+
+The PDF writes the annotation in Helvetica, which only knows the Western alphabets: Cyrillic, Greek, chess symbols (♔, ♞) or emoji show correctly in the HTML page, but come out as `?` in the PDF.
+
+### Printing the HTML page
+
+The PDF is the one meant for printing. For the HTML page, set the print dialog to default or no margins, without scaling, otherwise the browser shrinks the diagram and the squares no longer measure 2.4 cm.
+
+---
+
+## Example study
+
+The file `images/example-study.pdf` sets a small interesting study.  
+
+At the start, Black has no legal move: four of White's six possible first moves stalemate at once, and only `f3` and `f4` keep the game going.   
+White must then checkmate the black king while avoiding stalemate all the way. 
+
+The solution, ready to paste into the page:
+
+```
+[SetUp "1"]
+[FEN "k7/Pp6/1Pp5/2Pp4/3Pp3/4P3/5P2/6K1 w - - 0 1"]
+
+1.f3 exf3 2.Kf1 f2 3.e4 dxe4 4.Kxf2 e3+ 5.Ke1 e2 6.d5 cxd5 7.Kxe2 d4 8.Kd2 d3
+9.c6 bxc6 10.Kxd3 Kb7 11.Kd4 Ka8 12.Kc5 Kb7 13.Kd6 Ka8 14.Kc7 c5 15.b7+ Kxa7
+16.b8=Q+ Ka6 17.Qb6# 1-0
+```
+
+Note : Only the `[FEN]` tag is required: without it, a PGN starts from the initial position, where `1...exf3` is impossible.    
+The `[SetUp "1"]` tag merely flags a set-up starting position; Staunton ignores it, but the PGN standard requires it whenever a `[FEN]` tag is present.   
+Keep it so that other software reads the game without trouble.
+
+---
+
+## Files
+
+| File                  | Role                                                  |
+|-----------------------|-------------------------------------------------------|
+| `index.php`           | input page                                            |
+| `generate.php`        | produces the diagram, PDF or HTML                     |
+| `app.js`              | drives the board in the browser                       |
+| `chess-module.js`     | makes chess.js available to `app.js`                  |
+| `style.css`           | styling of the input page                             |
+| `favicon.ico`         | icon of the input page                                |
+| `lib/chessboard.php`  | geometry of the diagram, checks on what is received   |
+| `lib/output-pdf.php`  | PDF output                                            |
+| `lib/output-html.php` | HTML output                                           |
+| `lib/test.php`        | test suite                                            |
+| `lib/.htaccess`       | extra protection of `lib/` under Apache               |
+| `fetch-assets.sh`     | fetches the browser dependencies, and checks them     |
+| `assets/`             | jQuery, chessboard.js, chess.js, the twelve pieces    |
+| `docs/hardening.md`   | security measures and server configuration            |
+| `docs/apache2/staunton.conf` | Apache configuration, ready to install         |
+| `docs/nginx/staunton.conf`   | nginx configuration, ready to adapt            |
+| `images/`             | screenshot and example outputs                        |
+
+---
 
 ## Licences
 
 - chessboard.js 1.0.0, Chris Oakman, MIT.
 - jQuery 3.7.1, MIT.
 - chess.js 1.4.0, Jeff Hlywa, BSD-2-Clause.
-- Pièces Cburnett, récupérées depuis le dépôt lichess, CC BY-SA 3.0.
-- Le reste du code de ce répertoire est en CC-0 : Faites en ce que vous voulez :)
+- Cburnett pieces, fetched from the lichess repository, CC BY-SA 3.0.
+- The rest of the code in this directory is CC0: do whatever you want with it :)
 
 <p align="center">With ❤️ by <a href="https://github.com/deuza">DeuZa</a></p>

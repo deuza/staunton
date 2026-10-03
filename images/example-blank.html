@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>diagram</title>
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    padding: 1.2cm;
+    background: #fff;
+    color: #000;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+/* Single centred block, the reference for everything else. */
+.sheet { width: 20.4cm; margin: 0 auto; }
+
+.board { border-collapse: collapse; }
+.board td { padding: 0; margin: 0; }
+
+.square {
+    width:  2.4cm;
+    height: 2.4cm;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.light { background: #fff; }
+.dark  { background: #ccc; }
+
+/* Outer frame of the board. */
+.edge-top    { border-top:    1.2pt solid #000; }
+.edge-bottom { border-bottom: 1.2pt solid #000; }
+.edge-left   { border-left:   1.2pt solid #000; }
+.edge-right  { border-right:  1.2pt solid #000; }
+
+.corner { width: 0.6cm; height: 0.6cm; }
+
+.file-label {
+    width:  2.4cm;
+    height: 0.6cm;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 11pt;
+}
+
+.rank-label {
+    width:  0.6cm;
+    height: 2.4cm;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 11pt;
+}
+
+.piece {
+    display: block;
+    width:  2.064cm;
+    height: 2.064cm;
+    margin: 0 auto;
+}
+
+/* The indent aligns the text with the left edge of the board, not with
+   the coordinates gutter, exactly as in the PDF. */
+.notes {
+    padding-left: 0.6cm;
+    padding-right: 0.6cm;
+    margin: 1.1cm 0 0;
+    font-size: 11pt;
+    line-height: 1.35;
+    color: #666;
+
+    /* MultiCell forcibly breaks a word that is too long in the PDF.
+       Without this rule the HTML would not, and an annotation without
+       spaces would run off the page on a single line. */
+    overflow-wrap: break-word;
+    overflow-wrap: anywhere;
+}
+
+/* Side to move, aligned with the right edge of the board. The dot is a
+   circle, following the convention of problem collections: filled for
+   Black, empty and outlined for White. */
+.turn {
+    padding-right: 0.6cm;
+    margin: 0.55cm 0 0;
+    font-size: 10pt;
+    text-align: right;
+}
+
+.dot {
+    display: inline-block;
+    width: 0.30cm;
+    height: 0.30cm;
+    margin-right: 0.18cm;
+    border: 0.8pt solid #000;
+    border-radius: 50%;
+    vertical-align: baseline;
+}
+
+.dot-black { background: #000; }
+.dot-white { background: #fff; }
+
+.fen {
+    padding-left: 0.6cm;
+    margin: 0.6cm 0 0;
+    font-family: "DejaVu Sans Mono", Courier, monospace;
+    font-size: 10pt;
+    color: #000;
+    word-break: break-all;
+}
+
+/*
+ * Narrow side margins: the sheet is already 20.4cm wide, which leaves
+ * only a few millimetres on each side of an A4. Set the print dialog to
+ * default or no margins, otherwise the browser will scale the page down
+ * and a square will no longer measure 2.4cm.
+ */
+@page { size: A4 portrait; margin: 0.8cm 0.3cm; }
+
+@media print {
+    body { padding: 0; }
+    /* Without this, several browsers drop the grey fills. */
+    .dark,
+    .dot-black {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="sheet">
+
+<table class="board">
+<tr><td class="corner"></td><td class="file-label">a</td><td class="file-label">b</td><td class="file-label">c</td><td class="file-label">d</td><td class="file-label">e</td><td class="file-label">f</td><td class="file-label">g</td><td class="file-label">h</td><td class="corner"></td></tr>
+<tr><td class="rank-label">8</td><td class="square light edge-top edge-left"></td><td class="square dark edge-top"></td><td class="square light edge-top"></td><td class="square dark edge-top"></td><td class="square light edge-top"></td><td class="square dark edge-top"></td><td class="square light edge-top"></td><td class="square dark edge-top edge-right"></td><td class="rank-label">8</td></tr>
+<tr><td class="rank-label">7</td><td class="square dark edge-left"></td><td class="square light"></td><td class="square dark"></td><td class="square light"></td><td class="square dark"></td><td class="square light"></td><td class="square dark"></td><td class="square light edge-right"></td><td class="rank-label">7</td></tr>
+<tr><td class="rank-label">6</td><td class="square light edge-left"></td><td class="square dark"></td><td class="square light"></td><td class="square dark"></td><td class="square light"></td><td class="square dark"></td><td class="square light"></td><td class="square dark edge-right"></td><td class="rank-label">6</td></tr>
+<tr><td class="rank-label">5</td><td class="square dark edge-left"></td><td class="square light"></td><td class="square dark"></td><td class="square light"></td><td class="square dark"></td><td class="square light"></td><td class="square dark"></td><td class="square light edge-right"></td><td class="rank-label">5</td></tr>
+<tr><td class="rank-label">4</td><td class="square light edge-left"></td><td class="square dark"></td><td class="square light"></td><td class="square dark"></td><td class="square light"></td><td class="square dark"></td><td class="square light"></td><td class="square dark edge-right"></td><td class="rank-label">4</td></tr>
+<tr><td class="rank-label">3</td><td class="square dark edge-left"></td><td class="square light"></td><td class="square dark"></td><td class="square light"></td><td class="square dark"></td><td class="square light"></td><td class="square dark"></td><td class="square light edge-right"></td><td class="rank-label">3</td></tr>
+<tr><td class="rank-label">2</td><td class="square light edge-left"></td><td class="square dark"></td><td class="square light"></td><td class="square dark"></td><td class="square light"></td><td class="square dark"></td><td class="square light"></td><td class="square dark edge-right"></td><td class="rank-label">2</td></tr>
+<tr><td class="rank-label">1</td><td class="square dark edge-bottom edge-left"></td><td class="square light edge-bottom"></td><td class="square dark edge-bottom"></td><td class="square light edge-bottom"></td><td class="square dark edge-bottom"></td><td class="square light edge-bottom"></td><td class="square dark edge-bottom"></td><td class="square light edge-bottom edge-right"></td><td class="rank-label">1</td></tr>
+<tr><td class="corner"></td><td class="file-label">a</td><td class="file-label">b</td><td class="file-label">c</td><td class="file-label">d</td><td class="file-label">e</td><td class="file-label">f</td><td class="file-label">g</td><td class="file-label">h</td><td class="corner"></td></tr>
+</table>
+
+<p class="turn"><span class="dot dot-white"></span>White to move</p>
+
+<p class="notes">Position / notes: ______________________________________</p>
+<p class="fen">FEN: 8/8/8/8/8/8/8/8 w - - 0 1</p>
+
+</div>
+
+</body>
+</html>

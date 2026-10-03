@@ -1,28 +1,28 @@
 /*
- * style.css - habillage de la page de saisie.
+ * style.css - styling of the input page.
  *
- * La grammaire visuelle est reprise de mat-en-web : fond en degrade,
- * cartes blanches a coins arrondis et ombre portee, boutons colores.
+ * The visual grammar is borrowed from mat-en-web: gradient background,
+ * white cards with rounded corners and drop shadow, coloured buttons.
  *
- * Elle ne concerne QUE cette page. Les diagrammes exportes gardent leur
- * gabarit sobre, cases grises et A4, parce qu'ils sont faits pour etre
- * imprimes et que le brun de l'ecran sortirait en gris sale sur une
- * imprimante noir et blanc.
+ * It ONLY applies to this page. The exported diagrams keep their sober
+ * template, grey squares and A4, because they are meant to be printed and
+ * the brown of the screen would come out as a dirty grey on a black and
+ * white printer.
  *
- * Les couleurs du plateau lui-meme ne sont pas definies ici : le brun
- * #b58863 et le creme #f0d9b5 sont les valeurs natives de
- * chessboard-1.0.0.min.css, il n'y a rien a surcharger.
+ * The colours of the board itself are not defined here: the brown
+ * #b58863 and the cream #f0d9b5 are the native values of
+ * chessboard-1.0.0.min.css, there is nothing to override.
  */
 
 :root {
-    --primaire:   #2c3e50;
+    --primary:    #2c3e50;
     --info:       #3498db;
-    --succes:     #27ae60;
+    --success:    #27ae60;
     --danger:     #e74c3c;
-    --avert:      #f39c12;
-    --bordure:    #bdc3c7;
-    --texte:      #2c3e50;
-    --texte-pale: #7f8c8d;
+    --warning:    #f39c12;
+    --border:     #bdc3c7;
+    --text:       #2c3e50;
+    --text-muted: #7f8c8d;
 }
 
 * {
@@ -32,15 +32,19 @@
 }
 
 /*
- * Marges verticales resserrees (12 px au lieu de 20) : la page doit tenir
- * sans ascenseur sur un ecran 1600x900, y compris avec la mise a l'echelle
- * Windows a 125 %, ou la fenetre utile tombe vers 1280x600 px CSS.
+ * Vertical margins of 12 px: together with the board width below, they
+ * let the page fit without a scrollbar on a 1600x900 screen, including
+ * with Windows scaling at 125%, where the usable window drops to about
+ * 1280x600 CSS px. Measured with the default font size of the browsers
+ * (16 px), the page fits from 593 px of usable height (667 px below
+ * 1200 px of width, see the end of this file); a larger font size raises
+ * these thresholds, see the board width below.
  */
 body {
     min-height: 100vh;
     padding: 12px 20px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: var(--texte);
+    color: var(--text);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                  "Helvetica Neue", Arial, sans-serif;
     font-size: 15px;
@@ -48,32 +52,32 @@ body {
 }
 
 /* --------------------------------------------------------------- */
-/* En-tete                                                          */
+/* Header                                                           */
 /* --------------------------------------------------------------- */
 
-.entete {
+.page-header {
     max-width: 1180px;
     margin: 0 auto 12px;
     color: #fff;
     text-align: center;
 }
 
-.entete h1 {
+.page-header h1 {
     font-size: 1.8rem;
     font-weight: 700;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.entete p {
+.page-header p {
     opacity: 0.9;
     font-size: 0.95rem;
 }
 
 /* --------------------------------------------------------------- */
-/* Bandeau d'alerte                                                 */
+/* Alert banner                                                     */
 /* --------------------------------------------------------------- */
 
-.alerte {
+.alert {
     max-width: 1180px;
     margin: 0 auto 20px;
     padding: 12px 18px;
@@ -84,17 +88,17 @@ body {
     text-align: center;
 }
 
-.alerte-avertissement { background: var(--avert); }
+.alert-warning { background: var(--warning); }
 
 /* --------------------------------------------------------------- */
-/* Mise en page generale                                            */
+/* General layout                                                   */
 /* --------------------------------------------------------------- */
 
 /*
- * align-items: stretch donne aux deux cartes la meme hauteur : leurs bords
- * haut et bas sont alignes, quelle que soit la taille du plateau.
+ * align-items: stretch gives both cards the same height: their top and
+ * bottom edges line up, whatever the size of the board.
  */
-.conteneur {
+.container {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
@@ -104,14 +108,14 @@ body {
     margin: 0 auto;
 }
 
-.carte {
+.card {
     padding: 16px 20px;
     border-radius: 10px;
     background: #fff;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.panneau {
+.panel {
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -120,78 +124,87 @@ body {
 }
 
 /* --------------------------------------------------------------- */
-/* Plateau et coordonnees exterieures                               */
+/* Board and outer coordinates                                      */
 /* --------------------------------------------------------------- */
 
 /*
- * Le cadre sert de repere de positionnement aux coordonnees : il est le
- * premier ancetre positionne, donc celui auquel se rapportent les
- * offsetTop et offsetLeft lus dans app.js.
+ * The frame is the positioning reference of the coordinates: app.js
+ * places them relative to its rectangle.
  */
-.plateau-cadre {
+.board-frame {
     position: relative;
     padding-left: 1.7rem;
 }
 
 /*
- * La largeur du plateau suit la hauteur de la fenetre, ce qui evite
- * l'ascenseur sur un ecran peu haut.
+ * The width of the board follows the height of the window, which avoids
+ * a scrollbar on a short screen.
  *
- * Le coefficient vient du bilan vertical de la page : en-tete, marges et
- * barre de boutons occupent environ 225 px, et le bloc du plateau vaut a
- * peu pres 1,25 fois sa largeur, palettes et gouttiere comprises. D'ou
- * une largeur utile de 0,8 vh moins 220 px, bornee a 460 px en haut et a
- * 280 px en bas.
+ * The formula comes from the vertical budget of the page, measured in a
+ * browser: header, margins, button bar and palette gap take 226 px with
+ * the default font size, and the board block is 1.25 times as high as it
+ * is wide (ten squares for eight: the board and its two palettes). The
+ * page therefore fits as long as that budget + 1.25 x width stays within
+ * 100vh, that is a width of 80vh minus a constant.
  *
- * app.js rappelle board.resize() au redimensionnement, la taille des
- * cases suit donc.
+ * Part of the budget is set in rem (the header, the gap above the bottom
+ * palette), so it grows with the font size chosen in the browser: the
+ * constant is therefore made of pixels and rem. Measured pixel by pixel in
+ * Chromium and Firefox, with chessboard.js rounding the square size down,
+ * the smallest constant that never shows a scrollbar between the lowest
+ * possible height and 1000 px is 185 px for a font size of 16 px, 204 px
+ * for 20 px and 223 px for 24 px: 109 px + 4.75rem. 10 px of margin are
+ * added, for font and browser differences. The width is capped at 460 px
+ * at the top and 280 px at the bottom.
+ *
+ * app.js calls board.resize() again on resize, so the square size follows.
  */
-#plateau {
-    width: clamp(280px, calc(80vh - 220px), 460px);
+#board {
+    width: clamp(280px, calc(80vh - 119px - 4.75rem), 460px);
     max-width: 100%;
 }
 
 /*
- * chessboard.js colle la palette du bas contre le plateau. On ecarte les
- * deux pour degager la bande ou se posent les lettres de colonne, sinon
- * les pieces de la palette passent par-dessus.
+ * chessboard.js sticks the bottom palette against the board. The two are
+ * moved apart to free the band where the file letters sit, otherwise the
+ * palette pieces cover them.
  *
- * Le selecteur vise la sous-chaine du nom de classe : chessboard.js y
- * accole un suffixe qui lui est propre, autant ne pas le figer ici.
+ * The selector targets a substring of the class name: chessboard.js
+ * appends a suffix of its own to it, better not to hard-code it here.
  */
-#plateau [class*="spare-pieces-bottom"] {
+#board [class*="spare-pieces-bottom"] {
     margin-top: 1.7rem;
 }
 
-.reperes {
+.coords {
     position: absolute;
     display: flex;
-    color: var(--texte);
+    color: var(--text);
     font-size: 0.95rem;
     font-weight: 600;
 }
 
-.reperes span {
+.coords span {
     display: flex;
     flex: 1 1 0;
     align-items: center;
     justify-content: center;
 }
 
-.reperes-rangs {
+.coords-ranks {
     left: 0;
     width: 1.7rem;
     flex-direction: column;
 }
 
-.reperes-colonnes {
+.coords-files {
     height: 1.6rem;
     flex-direction: row;
 }
 
-.carte-plateau { flex: 0 0 auto; }
+.card-board { flex: 0 0 auto; }
 
-.barre {
+.toolbar {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
@@ -199,56 +212,77 @@ body {
 }
 
 /*
- * Mode d'emploi du plateau, dans une carte a droite du formulaire. Il ne
- * s'etire pas sur toute la hauteur de la rangee : align-self l'aligne sur
- * le haut des deux autres cartes, a la hauteur du plateau. Son titre
- * reprend le style des intitules du formulaire (.bloc h2).
+ * How to use the board, in a card to the right of the form. It does not
+ * stretch over the whole height of the row: align-self lines it up with
+ * the top of the other two cards, level with the board. Its title reuses
+ * the style of the form headings (.block h2).
  */
-.carte-aide {
+.card-help {
     flex: 0 0 220px;
     align-self: flex-start;
     font-size: 0.88rem;
     line-height: 1.5;
 }
 
-.carte-aide h2 {
+.card-help h2 {
     margin-bottom: 8px;
-    color: var(--primaire);
+    color: var(--primary);
     font-size: 0.8rem;
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
 }
 
+/*
+ * The card is collapsible: the summary line carries the heading and the
+ * disclosure triangle, and the whole line is clickable. The heading stays
+ * inline so that the triangle sits beside it.
+ */
+.card-help summary {
+    cursor: pointer;
+}
+
+.card-help summary h2 {
+    display: inline;
+}
+
+.card-help details[open] > summary {
+    margin-bottom: 8px;
+}
+
+.card-help p + p {
+    margin-top: 8px;
+}
+
 /* --------------------------------------------------------------- */
-/* Formulaire                                                       */
+/* Form                                                             */
 /* --------------------------------------------------------------- */
 
-.bloc h2 {
+.block h2 {
     margin-bottom: 8px;
-    color: var(--primaire);
+    color: var(--primary);
     font-size: 0.8rem;
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
 }
 
-.ligne {
+.row {
     display: flex;
     gap: 8px;
 }
 
-.ligne input[type="text"],
-.ligne textarea { flex: 1 1 auto; min-width: 0; }
+.row input[type="text"],
+.row textarea { flex: 1 1 auto; min-width: 0; }
 
-/* Le bouton reste en haut quand la zone de collage s'agrandit. */
-.ligne { align-items: flex-start; }
+/* The button stays at the top when the paste area grows. */
+.row { align-items: flex-start; }
 
 input[type="text"],
 textarea {
     width: 100%;
     padding: 8px 10px;
-    border: 1px solid var(--bordure);
+    border: 1px solid var(--border);
     border-radius: 6px;
     background: #fff;
     color: inherit;
@@ -266,19 +300,19 @@ textarea {
     font-size: 0.9rem;
 }
 
-#fen-colle {
+#fen-paste {
     font-family: "DejaVu Sans Mono", Consolas, monospace;
     font-size: 0.8rem;
 }
 
-.compteur {
+.counter {
     margin-top: 4px;
-    color: var(--texte-pale);
+    color: var(--text-muted);
     font-size: 0.78rem;
     text-align: right;
 }
 
-.compteur-plein { color: var(--danger); font-weight: 600; }
+.counter-full { color: var(--danger); font-weight: 600; }
 
 .message {
     min-height: 1.2em;
@@ -286,45 +320,45 @@ textarea {
     font-size: 0.82rem;
 }
 
-.message.succes { color: var(--succes); }
-.message.erreur { color: var(--danger); }
+.message.success { color: var(--success); }
+.message.error   { color: var(--danger); }
 
 /*
- * Navigation dans une partie PGN. L'attribut hidden doit l'emporter sur
- * le display: flex, d'ou la regle explicite.
+ * Navigation through a PGN game. The hidden attribute must win over
+ * display: flex, hence the explicit rule.
  */
-.navigation {
+.nav {
     display: flex;
     gap: 6px;
     align-items: center;
     margin-top: 6px;
 }
 
-.navigation[hidden] { display: none; }
+.nav[hidden] { display: none; }
 
-.navigation .bouton {
+.nav .btn {
     padding: 5px 11px;
     font-size: 1rem;
     line-height: 1;
 }
 
-.navigation .bouton:disabled {
+.nav .btn:disabled {
     opacity: 0.4;
     cursor: default;
 }
 
-.coup {
+.move {
     margin-left: 6px;
     font-family: "DejaVu Sans Mono", Consolas, monospace;
     font-size: 0.82rem;
 }
 
-.choix {
+.choice {
     display: flex;
     gap: 18px;
 }
 
-.choix label {
+.choice label {
     display: flex;
     gap: 6px;
     align-items: center;
@@ -332,10 +366,10 @@ textarea {
 }
 
 /* --------------------------------------------------------------- */
-/* Boutons                                                          */
+/* Buttons                                                          */
 /* --------------------------------------------------------------- */
 
-.bouton {
+.btn {
     padding: 9px 16px;
     border: none;
     border-radius: 6px;
@@ -347,66 +381,87 @@ textarea {
     transition: box-shadow 0.15s, filter 0.15s;
 }
 
-.bouton:hover {
+.btn:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     filter: brightness(1.08);
 }
 
-.bouton-succes { background: var(--succes); }
-.bouton-info   { background: var(--info); }
-.bouton-danger { background: var(--danger); }
+.btn-success { background: var(--success); }
+.btn-info    { background: var(--info); }
+.btn-danger  { background: var(--danger); }
 
-.bouton-neutre {
-    border: 1px solid var(--bordure);
+.btn-neutral {
+    border: 1px solid var(--border);
     background: #fff;
-    color: var(--texte);
+    color: var(--text);
 }
 
 /*
- * Le bouton de generation est repousse en bas du panneau, a hauteur de la
- * barre de boutons du plateau, puisque les deux cartes font la meme
- * hauteur.
+ * The generate button is pushed to the bottom of the panel, level with
+ * the board's button bar, since both cards have the same height.
  */
-.panneau .bouton-large { margin-top: auto; }
+.panel .btn-wide { margin-top: auto; }
 
-.bouton-large {
+.btn-wide {
     width: 100%;
     padding: 12px;
     font-size: 1rem;
 }
 
 /* --------------------------------------------------------------- */
-/* Petits ecrans                                                    */
+/* Small screens                                                    */
 /* --------------------------------------------------------------- */
 
 /*
- * En dessous de 1200 px les trois cartes ne tiennent plus cote a cote :
- * le mode d'emploi passe au-dessus, sur toute la largeur. Il est place en
- * dernier dans le HTML (a droite sur grand ecran), order le remonte ici en
- * tete pour qu'il reste lu avant le plateau.
+ * Below 1200 px the three cards no longer fit side by side: the how-to
+ * moves above, full width. It comes last in the HTML (on the right on a
+ * large screen), order brings it back to the top here so that it is still
+ * read before the board.
+ *
+ * Closed, the card still adds 73 px to the height of the page with the
+ * default font size, hence a board width of its own, with two bounds,
+ * measured as above for font sizes of 16, 20 and 24 px:
+ *
+ *  - height: the smallest constant that never shows a scrollbar is 244,
+ *    267 and 290 px, that is 152 px + 5.75rem; 10 px of margin are added;
+ *  - width: besides the board, the two cards and the margins take 468,
+ *    474 and 481 px, that is about 441 px + 1.7rem (the frame of the
+ *    coordinates); beyond that, the form drops below the board and the
+ *    page can no longer fit. 10 px of margin are added.
+ *
+ * With the default font size, the page thus fits without a scrollbar from
+ * 667 px of height, in any window at least 786 px wide: below that, the
+ * button bar under the board (345 px in the measuring browser, depending
+ * on the font) already makes the board card too wide for the form to stay
+ * beside it. Opening the card is the visitor's choice, and may bring the
+ * scrollbar back.
  */
 @media (max-width: 1200px) {
-    .carte-aide {
+    .card-help {
         flex-basis: 100%;
         order: -1;
+    }
+
+    #board {
+        width: clamp(280px, min(80vh - 162px - 5.75rem, 100vw - 451px - 1.7rem), 460px);
     }
 }
 
 @media (max-width: 720px) {
     body { padding: 12px; }
 
-    #plateau { width: 100%; }
+    #board { width: 100%; }
 
-    .panneau { width: 100%; }
+    .panel { width: 100%; }
 
-    .plateau-cadre { padding-left: 1.3rem; }
+    .board-frame { padding-left: 1.3rem; }
 
-    .carte-plateau { width: 100%; }
+    .card-board { width: 100%; }
 
-    /* Sur un ecran etroit, la hauteur cesse d'etre le facteur limitant. */
-    #plateau { width: 100%; }
+    /* On a narrow screen, height is no longer the limiting factor. */
+    #board { width: 100%; }
 
-    .reperes-rangs    { width: 1.3rem; }
-    .reperes-colonnes { height: 1.3rem; }
-    .reperes          { font-size: 0.8rem; }
+    .coords-ranks { width: 1.3rem; }
+    .coords-files { height: 1.3rem; }
+    .coords       { font-size: 0.8rem; }
 }

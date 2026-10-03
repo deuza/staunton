@@ -1,3 +1,4 @@
-# Ces fichiers sont des inclusions, jamais des points d'entree.
-# Syntaxe Apache 2.4 ; necessite AllowOverride sur le repertoire parent.
+# These files are includes, never entry points.
+# Apache 2.4 syntax; only read if AllowOverride includes AuthConfig.
+# Extra safety net: the main lock is enforced by PHP.
 Require all denied
