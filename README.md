@@ -39,19 +39,20 @@ More examples, blank and annotated, in HTML and PDF, are in the [images/ directo
 
 ## Installation
 
-You need PHP 8.0 or later with the `ctype` and `xml` extensions, and TCPDF 6 for the PDF output.
+You need PHP 8.0 or later with the `ctype` and `xml` extensions, and TCPDF 6 for the PDF output.   
 Staunton is tested with PHP 8.0 to 8.5 and TCPDF 6.4.4 to 6.11.4.
 
-### Debian, Ubuntu
+### Debian, Ubuntu :
 
 ```
 apt install php-tcpdf php-xml curl
 ```
 
-### FreeBSD
+### FreeBSD :
 
-The instructions below follow the default PHP version of the ports (8.5). On Linux, the test suite passes under PHP 8.5 with TCPDF installed through Composer.
+The instructions below follow the default PHP version of the ports (8.5). 
 
+On Linux, the test suite passes under PHP 8.5 with TCPDF installed through Composer.     
 The ports tree has no TCPDF: it is installed with Composer, at the root of the project.
 
 ```
@@ -59,11 +60,13 @@ pkg install php85 php85-ctype php85-xml php85-zlib php85-curl php85-composer cur
 composer require "tecnickcom/tcpdf:^6.9.2"
 ```
 
-Keep the version constraint: without it, Composer installs TCPDF 7, which Staunton does not support. And keep `php85-curl`: TCPDF 6.8 and later cannot run without the PHP curl extension.
+Keep the version constraint: without it, Composer installs TCPDF 7, which Staunton does not support.   
+And keep `php85-curl`: TCPDF 6.8 and later cannot run without the PHP curl extension.
 
 ### TCPDF installed elsewhere
 
-Staunton looks for TCPDF in the Debian package first, then in `vendor/` at the root of the project. For any other location, give the path of `tcpdf.php`, or of Composer's `autoload.php`, in the `STAUNTON_TCPDF` environment variable, for instance in the Apache virtual host:
+Staunton looks for TCPDF in the Debian package first, then in `vendor/` at the root of the project.   
+For any other location, give the path of `tcpdf.php`, or of Composer's `autoload.php`, in the `STAUNTON_TCPDF` environment variable, for instance in the Apache virtual host:
 
 ```apache
 SetEnv STAUNTON_TCPDF /path/to/tcpdf.php
@@ -71,7 +74,8 @@ SetEnv STAUNTON_TCPDF /path/to/tcpdf.php
 
 ### Browser dependencies
 
-jQuery, chessboard.js, chess.js and the pieces live in the `assets/` directory. If it is missing or damaged, fetch them again:
+jQuery, chessboard.js, chess.js and the pieces live in the `assets/` directory.   
+If it is missing or damaged, fetch them again:
 
 ```
 sh fetch-assets.sh
@@ -81,7 +85,9 @@ The script checks every file against the checksums pinned inside it, and stops a
 
 ### Web server
 
-The security of an installation rests on two pillars: the code, which protects itself, and the configuration of the web server, which does what the code cannot do. It turns off directory listings, refuses `.git`, `lib/`, `vendor/` and `fetch-assets.sh`, and sends the security headers. That configuration is not optional: apply it before opening the page to others.
+The security of an installation rests on two pillars: the code, which protects itself, and the configuration of the web server, which does what the code cannot do. 
+
+It turns off directory listings, refuses `.git`, `lib/`, `vendor/` and `fetch-assets.sh`, and sends the security headers. That configuration is not optional: apply it before opening the page to others.
 
 With Apache, PHP being enabled through `libapache2-mod-php` or `php-fpm`, from the root of the project:
 
@@ -92,7 +98,8 @@ a2enconf staunton
 apache2ctl configtest && systemctl reload apache2
 ```
 
-The file expects the project in `/var/www/html/staunton`: adjust its paths if needed. Keep `a2enmod headers` first: without that module, `configtest` stops on `Invalid command 'Header'`.
+The file expects the project in `/var/www/html/staunton`: adjust its paths if needed.    
+Keep `a2enmod headers` first: without that module, `configtest` stops on `Invalid command 'Header'`.
 
 Use `docs/nginx/staunton.conf` with nginx.
 
@@ -128,18 +135,22 @@ The PDF writes the annotation in Helvetica, which only knows the Western alphabe
 
 ### Printing the HTML page
 
-The PDF is the one meant for printing. For the HTML page, set the print dialog to default or no margins, without scaling, otherwise the browser shrinks the diagram and the squares no longer measure 2.4 cm.
+**The PDF is the one meant for printing.**
+
+For the HTML page, set the print dialog to default or no margins, without scaling, otherwise the browser shrinks the diagram and the squares no longer measure 2.4 cm.
 
 ---
 
-## Example study
+## Example study included
 
 The file `images/example-study.pdf` sets a small interesting study.  
 
-At the start, Black has no legal move: four of White's six possible first moves stalemate at once, and only `f3` and `f4` keep the game going.   
+At the start, Black has no legal move:   
+Four of White's six possible first moves stalemate at once, and only `f3` and `f4` keep the game going.   
+
 White must then checkmate the black king while avoiding stalemate all the way. 
 
-The solution, ready to paste into the page:
+The solution, ready to paste into the page :
 
 ```
 [SetUp "1"]
@@ -151,7 +162,8 @@ The solution, ready to paste into the page:
 ```
 
 Note : Only the `[FEN]` tag is required: without it, a PGN starts from the initial position, where `1...exf3` is impossible.    
-The `[SetUp "1"]` tag merely flags a set-up starting position; Staunton ignores it, but the PGN standard requires it whenever a `[FEN]` tag is present.   
+The `[SetUp "1"]` tag merely flags a set-up starting position. Staunton ignores it, but the PGN standard requires it whenever a `[FEN]` tag is present.   
+
 Keep it so that other software reads the game without trouble.
 
 ---
@@ -180,6 +192,12 @@ Keep it so that other software reads the game without trouble.
 
 ---
 
+## Why Staunton ?
+
+The name refers to [Howard Staunton](https://en.wikipedia.org/wiki/Howard_Staunton).   
+These are the [standard pieces](https://en.wikipedia.org/wiki/Staunton_chess_set) used in the world of chess and by FIDE, who endorsed it
+
+--- 
 ## Licences
 
 - chessboard.js 1.0.0, Chris Oakman, MIT.
