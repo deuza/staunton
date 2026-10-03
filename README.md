@@ -8,7 +8,8 @@
 
 # Staunton - Chess position diagram generator
 
-Set up a chess position in your browser and get, on the fly, a clean diagram: an A4 PDF ready to print, or a self-contained HTML page to share. Handy for a study sheet or an exercise.
+Set up a chess position in your browser and get, on the fly, a clean diagram: an A4 PDF ready to print, or a self-contained HTML page to share.   
+Handy for a study sheet or an exercise.
 
 *Any position will do, even an impossible one: five kings on the board is fine.*
 
@@ -16,7 +17,7 @@ Set up a chess position in your browser and get, on the fly, a clean diagram: an
 
 Each diagram has 2.4 cm squares, coordinates all around the board, the side to move, a line for your notes and the FEN of the position, so that the position can be set up again from the printed sheet.
 
-An annotated example:
+An annotated example :
 
 [![Morphy](images/morphy-mini.png)](images/morphy.png)
 
@@ -32,8 +33,8 @@ More examples, blank and annotated, in HTML and PDF, are in the [images/ directo
 - Options for flipping the chessboard.
 - An annotation of up to 194 characters, under the board.
 - PDF for printing, HTML for sharing: the HTML page carries everything with it, pieces included, and links to nothing.
-- Nothing is stored on the server: no file, no session, no database.
-- Works offline: all the browser dependencies are served from the project itself.
+- Nothing is stored on the server : no file, no session, no database.
+- Works offline : all the browser dependencies are served from the project itself.
 
 ---
 
@@ -53,20 +54,20 @@ apt install php-tcpdf php-xml curl
 The instructions below follow the default PHP version of the ports (8.5). 
 
 On Linux, the test suite passes under PHP 8.5 with TCPDF installed through Composer.     
-The ports tree has no TCPDF: it is installed with Composer, at the root of the project.
+The ports tree has no TCPDF : it is installed with Composer, at the root of the project.
 
 ```
 pkg install php85 php85-ctype php85-xml php85-zlib php85-curl php85-composer curl
 composer require "tecnickcom/tcpdf:^6.9.2"
 ```
 
-Keep the version constraint: without it, Composer installs TCPDF 7, which Staunton does not support.   
-And keep `php85-curl`: TCPDF 6.8 and later cannot run without the PHP curl extension.
+Keep the version constraint : without it, Composer installs TCPDF 7, which Staunton does not support.   
+And keep `php85-curl` : TCPDF 6.8 and later cannot run without the PHP curl extension.
 
 ### TCPDF installed elsewhere
 
 Staunton looks for TCPDF in the Debian package first, then in `vendor/` at the root of the project.   
-For any other location, give the path of `tcpdf.php`, or of Composer's `autoload.php`, in the `STAUNTON_TCPDF` environment variable, for instance in the Apache virtual host:
+For any other location, give the path of `tcpdf.php`, or of Composer's `autoload.php`, in the `STAUNTON_TCPDF` environment variable, for instance in the Apache virtual host :
 
 ```apache
 SetEnv STAUNTON_TCPDF /path/to/tcpdf.php
@@ -81,15 +82,19 @@ If it is missing or damaged, fetch them again:
 sh fetch-assets.sh
 ```
 
-The script checks every file against the checksums pinned inside it, and stops at the slightest difference. Keep it next to the code: the test suite reads those checksums, and the server configuration refuses to serve it.
+The script checks every file against the checksums pinned inside it, and stops at the slightest difference.    
+Keep it next to the code : the test suite reads those checksums, and the server configuration refuses to serve it.
 
 ### Web server
 
-The security of an installation rests on two pillars: the code, which protects itself, and the configuration of the web server, which does what the code cannot do. 
+The security of an installation rests on two pillars : 
+- The code, which protects itself.
+- The configuration of the web server, which does what the code cannot do. 
 
-It turns off directory listings, refuses `.git`, `lib/`, `vendor/` and `fetch-assets.sh`, and sends the security headers. That configuration is not optional: apply it before opening the page to others.
+It turns off directory listings, refuses `.git`, `lib/`, `vendor/` and `fetch-assets.sh`, and sends the security headers.   
+That configuration is not optional: **apply it before opening the page to others.**
 
-With Apache, PHP being enabled through `libapache2-mod-php` or `php-fpm`, from the root of the project:
+With Apache, PHP being enabled through `libapache2-mod-php` or `php-fpm`, from the root of the project :
 
 ```
 cp docs/apache2/staunton.conf /etc/apache2/conf-available/staunton.conf
@@ -111,9 +116,10 @@ Use `docs/nginx/staunton.conf` with nginx.
 php lib/test.php
 ```
 
-The test suite needs nothing else. It must end with `0 failure(s)`, and it tells which PHP and which TCPDF it found. If `assets/` lacks a file, re-run `fetch-assets.sh`.
+The test suite needs nothing else. It must end with `0 failure(s)`, and it tells which PHP and which TCPDF it found.      
+If `assets/` lacks a file, re-run `fetch-assets.sh`.
 
-Give it the address of the page, and it also checks the configuration of the web server:
+Give it the address of the page, and it also checks the configuration of the web server :
 
 ```
 php lib/test.php http://localhost/staunton/
@@ -124,18 +130,21 @@ php lib/test.php http://localhost/staunton/
 ## Usage
 
 - Drag a piece from either palette onto a square. To remove a piece, click it without moving it, or drag it off the board.
-- To load a position, paste a FEN or a PGN game into the field, then press Enter or click **Load**. Text that cannot be read leaves the board untouched, and the reason is shown below the field.
-- After a PGN, four buttons step through the game, and the side to move follows. If the text holds several games, only the first one is read.
-- The diagram is drawn from Black's side when the board is flipped on the page, or when Black is to move; from White's side otherwise.
-- Type your annotation, check the side to move and the output, then click **Generate the diagram**. The diagram opens in a new tab: the input page stays as it is, ready for another output or another position.
+- To load a position, paste a FEN or a PGN game into the field, then press Enter or click **Load**. *(Text that cannot be read leaves the board untouched, and the reason is shown below the field.)*
+- After a PGN, four buttons step through the game, and the side to move follows. *(If the text holds several games, only the first one is read.)*
+- The diagram is drawn from Black's side when the board is flipped on the page, or when Black is to move. From White's side otherwise.
+- Type your annotation, check the side to move and the output, then click **Generate the diagram**. *(The diagram opens in a new tab : the input page stays as it is, ready for another output or another position.)*
 
-To come back to a position from a printed sheet, copy its FEN into the address of the page, for instance `index.php?fen=8/8/8/4k3/8/8/8/4K3 b - - 0 1`. The side to move is read from the FEN too.
+To come back to a position from a printed sheet, copy its FEN into the interface.   
+Another method is using address of the page, for instance `staunton/index.php?fen=8/8/8/4k3/8/8/8/4K3 b - - 0 1`. 
 
-The PDF writes the annotation in Helvetica, which only knows the Western alphabets: Cyrillic, Greek, chess symbols (♔, ♞) or emoji show correctly in the HTML page, but come out as `?` in the PDF.
+The side to move is read from the FEN too.
+
+The PDF writes the annotation in Helvetica, which only knows the Western alphabets : Cyrillic, Greek, chess symbols (♔, ♞) or emoji show correctly in the HTML page, but come out as `?` in the PDF.
 
 ### Printing the HTML page
 
-**The PDF is the one meant for printing.**
+**PDF files are specifically intended for printing.**
 
 For the HTML page, set the print dialog to default or no margins, without scaling, otherwise the browser shrinks the diagram and the squares no longer measure 2.4 cm.
 
@@ -145,7 +154,7 @@ For the HTML page, set the print dialog to default or no margins, without scalin
 
 The file `images/example-study.pdf` sets a small interesting study.  
 
-At the start, Black has no legal move:   
+At the start, Black has no legal move :   
 Four of White's six possible first moves stalemate at once, and only `f3` and `f4` keep the game going.   
 
 White must then checkmate the black king while avoiding stalemate all the way. 
@@ -161,10 +170,17 @@ The solution, ready to paste into the page :
 16.b8=Q+ Ka6 17.Qb6# 1-0
 ```
 
-Note : Only the `[FEN]` tag is required: without it, a PGN starts from the initial position, where `1...exf3` is impossible.    
+Note : Only the `[FEN]` tag is required. Without it, a PGN starts from the initial position, where `1...exf3` is impossible.    
 The `[SetUp "1"]` tag merely flags a set-up starting position. Staunton ignores it, but the PGN standard requires it whenever a `[FEN]` tag is present.   
 
-Keep it so that other software reads the game without trouble.
+*Keep it so that other software reads the game without trouble.*
+
+---
+
+## Why Staunton ?
+
+The name refers to [Howard Staunton](https://en.wikipedia.org/wiki/Howard_Staunton).   
+These are the [standard pieces](https://en.wikipedia.org/wiki/Staunton_chess_set) used in the world of chess and by FIDE, who endorsed it.
 
 ---
 
@@ -189,13 +205,6 @@ Keep it so that other software reads the game without trouble.
 | `docs/apache2/staunton.conf` | Apache configuration, ready to install         |
 | `docs/nginx/staunton.conf`   | nginx configuration, ready to adapt            |
 | `images/`             | screenshot and example outputs                        |
-
----
-
-## Why Staunton ?
-
-The name refers to [Howard Staunton](https://en.wikipedia.org/wiki/Howard_Staunton).   
-These are the [standard pieces](https://en.wikipedia.org/wiki/Staunton_chess_set) used in the world of chess and by FIDE, who endorsed it
 
 --- 
 ## Licences
