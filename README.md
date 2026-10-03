@@ -8,10 +8,9 @@
 
 # Staunton - Chess position diagram generator
 
-Set up a chess position in your browser and get, on the fly, a clean diagram : an A4 PDF ready to print, or a self-contained HTML page to share.
-Handy for a study sheet or an exercise.
+Set up a chess position in your browser and get, on the fly, a clean diagram : an A4 PDF ready to print, or a self-contained HTML page to share. Handy for a study sheet or an exercise.
 
-*Any position will do, even an impossible one: five kings on the board is fine.*
+*Any position will do, even an impossible one: five kings on the board is fine !*
 
 ![screenshot](images/staunton.png)
 
@@ -21,7 +20,7 @@ An annotated example :
 
 [![Morphy](images/morphy-mini.png)](images/morphy.png)
 
-More examples, blank and annotated, and one study in HTML and PDF, are in the [images/ directory](https://github.com/deuza/staunton/tree/main/images).
+More examples : blank, annotated and one study in HTML and PDF are in the [images/ directory](https://github.com/deuza/staunton/tree/main/images).
 
 ---
 
@@ -79,6 +78,16 @@ For any other location, give the path of `tcpdf.php`, or of Composer's `autoload
 SetEnv STAUNTON_TCPDF /path/to/tcpdf.php
 ```
 
+### Clone the repository :
+
+Place yourself in the `/var/www/html directory`, then run the command :
+
+```
+git clone git@github.com:deuza/staunton.git 
+```
+
+And access Staunton via `https://localhost/staunton/`
+
 ### Browser dependencies :
 
 jQuery, chessboard.js, chess.js and the pieces live in the `assets/` directory.   
@@ -91,7 +100,7 @@ sh fetch-assets.sh
 The script checks every file against the checksums pinned inside it, and stops at the slightest difference.    
 Keep it next to the code : the test suite reads those checksums, and the server configuration refuses to serve it.
 
-### Web server
+### Web server :
 
 The security of an installation rests on two pillars : 
 - The code, which protects itself.
@@ -185,8 +194,10 @@ The `[SetUp "1"]` tag merely flags a set-up starting position. Staunton ignores 
 
 ## Why Staunton ?
 
-The name refers to [Howard Staunton](https://en.wikipedia.org/wiki/Howard_Staunton).   
+The name refers to [Howard Staunton](https://en.wikipedia.org/wiki/Howard_Staunton).    
 These are the [standard pieces](https://en.wikipedia.org/wiki/Staunton_chess_set) used in the world of chess and by FIDE, who endorsed it.
+
+![pieces](images/JaquesCookStaunton.jpg)
 
 ---
 
