@@ -2,6 +2,7 @@
 ![Hack The Planet](https://img.shields.io/badge/hack-the--planet-black?style=plastic\&logo=Debian\&logoColor=white)
 ![Built With Love](https://img.shields.io/badge/built%20with-%E2%9D%A4%20by%20DeuZa-red?style=plastic)
 
+![GitHub release](https://img.shields.io/github/v/release/deuza/staunton?label=release&style=plastic)
 [![GitHub last commit](https://img.shields.io/github/last-commit/deuza/staunton?style=plastic)](https://github.com/deuza/staunton/commits/main)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/t/deuza/staunton?style=plastic)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/deuza/staunton?style=plastic)
