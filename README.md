@@ -84,7 +84,7 @@ SetEnv STAUNTON_TCPDF /path/to/tcpdf.php
 Place yourself in the `/var/www/html directory`, then run the command :
 
 ```
-git clone git@github.com:deuza/staunton.git 
+git clone https://github.com/deuza/staunton.git
 ```
 
 And access Staunton via `https://localhost/staunton/`
