@@ -58,7 +58,7 @@ function h(string $s): string
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Board editor</title>
+<title>Staunton</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="stylesheet" href="assets/chessboard-1.0.0.min.css">
 <link rel="stylesheet" href="style.css">
@@ -209,6 +209,14 @@ function h(string $s): string
 -->
 <script type="module" src="chess-module.js"></script>
 <script src="app.js"></script>
+
+<p align="center" style="color: white;">
+  With ❤️ by <a href="https://github.com/deuza" style="color: white;">DeuZa</a> —
+  Program under licence
+  <a href="https://creativecommons.org/publicdomain/zero/1.0/" style="color: white;">CC0</a>
+  disponible here :
+  <a href="https://github.com/deuza/staunton" style="color: white;">github.com/deuza/staunton/</a>
+</p>
 
 </body>
 </html>
