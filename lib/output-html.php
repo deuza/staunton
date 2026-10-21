@@ -193,11 +193,16 @@ function chb_output_html(
     // -------------------------------------------------------------------
     // Document assembly
     // -------------------------------------------------------------------
+    // The page carries its own content security policy: the one the web
+    // server sends (see docs/hardening.md) does not follow a saved or
+    // forwarded copy, opened from disk, where an altered piece SVG would
+    // otherwise run. No script, no network, inline styles only.
     $html = <<<HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>diagram</title>
 <style>

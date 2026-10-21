@@ -27,7 +27,7 @@ More examples : blank, annotated and one study in HTML and PDF are in the [image
 
 ## Features
 
-- Drag and drop the pieces from the two palettes, remove them with a click.
+- Drag and drop the pieces from the two palettes, with the mouse or a finger, remove them with a click (or a tap).
 - Paste a FEN, or a whole game in PGN (Lichess exports included), then step through the moves to pick the position you want.
 - The side to move follows the FEN or the game, and can be changed by hand.
 - Options for flipping the chessboard.
@@ -145,7 +145,7 @@ php lib/test.php http://localhost/staunton/
 
 ## Usage
 
-- Drag a piece from either palette onto a square. To remove a piece, click it without moving it, or drag it off the board.
+- Drag a piece from either palette onto a square, with the mouse or a finger. To remove a piece, click (or tap) it without moving it, or drag it off the board.
 - To load a position, paste a FEN or a PGN game into the field, then press Enter or click **Load**. *(Text that cannot be read leaves the board untouched, and the reason is shown below the field.)*
 - After a PGN, four buttons step through the game, and the side to move follows. *(If the text holds several games, only the first one is read.)*
 - The diagram is drawn from Black's side when the board is flipped on the page, or when Black is to move. From White's side otherwise.

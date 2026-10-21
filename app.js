@@ -165,6 +165,15 @@
             return false;
         }
 
+        // Same 200-byte guard as chb_validate_placement() on the server: a
+        // FEN never exceeds a hundred characters, and chessboard.js runs a
+        // regular expression over the whole string, which is quadratic on
+        // a long run of spaces.
+        if (input.length > 200) {
+            fenMessage('Invalid FEN, the board was not changed.', 'error');
+            return false;
+        }
+
         var position = Chessboard.fenToObj(input);
 
         if (position === false) {
@@ -239,7 +248,10 @@
     function firstGame(text) {
         var headers = /^(?:\s*\[[^\]]*\])*/.exec(text)[0];
         var rest = text.slice(headers.length);
-        var cutAt = rest.search(/\n\s*\[[A-Za-z0-9_]+\s+"/);
+        // [ \t\r]* rather than \s*: a whitespace class that also matched
+        // the line feed made the scan quadratic on a long run of blank
+        // lines, enough to freeze the tab on a hostile paste.
+        var cutAt = rest.search(/\n[ \t\r]*\[[A-Za-z0-9_]+\s+"/);
 
         if (cutAt === -1) {
             return { pgn: text, cut: false };

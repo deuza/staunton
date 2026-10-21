@@ -86,9 +86,9 @@ The PDF writes the annotation in Helvetica, a TCPDF core font limited to the Wes
 
 ## 7. PDF output
 
-- **Metadata are constants :** creator and title only. No user data ever goes into the information dictionary or the XMP packet : `ChessboardPdf::_out()` rewrites, with a regular expression, every object outside the page streams that contains `Producer`, and free text in those objects would make that rewriting remotely triggerable.
+- **Metadata are constants :** creator and title only. No user data ever goes into the information dictionary or the XMP packet : `ChessboardPdf::_out()` rewrites, with a regular expression, every object written while the document is being closed that contains `Producer`, and free text in those objects would make that rewriting remotely triggerable. The page content streams go through that guard too, but the rewriting cannot match there : the annotation is written by a `Tj` operator with its parentheses escaped, so the encoded producer string never occurs in it.
 - **No promotional link :** At the bottom of the last page, TCPDF slips in a 1 point "Powered by TCPDF", in invisible rendering mode, with a link annotation to tcpdf.org. The `ChessboardPdf` subclass switches it off : the document contains no link at all.
-- **No address in the Producer field :** TCPDF writes its address there, in the information dictionary and in the XMP packet. It is removed when writing, and the declared length of the XMP stream is recomputed. The field comes down to "TCPDF" and the version number.
+- **No address nor version in the Producer field :** TCPDF writes its name, its version and its address there, in the information dictionary and in the XMP packet. The address and the version are removed when writing, and the declared length of the XMP stream is recomputed. The field comes down to "TCPDF" : the exact version would fingerprint the build, hence the release of the distribution.
 - **One page, always :** Automatic page breaks are disabled from the creation of the document.
 - **TCPDF 6 only :** TCPDF 7 keeps the name and the public API, but runs on another engine, without the `TCPDF_STATIC` class nor the internals that `ChessboardPdf` relies on. TCPDF 6.8 and later also need the PHP curl extension. In both cases the PDF output stops with a clear message and a 500, instead of a fatal error, the technical detail goes to the PHP error log, not to the visitor.
 
@@ -96,6 +96,7 @@ The PDF writes the annotation in Helvetica, a TCPDF core font limited to the Wes
 
 - **Self-contained :** The piece SVGs are inlined, the styles too, no external resource, and no link at all (no `href`, no `src`, no favicon). Once saved or forwarded, the page gives nothing away about the machine that produced it.
 - **No script :** The page contains none and needs none, so its content security policy forbids them all (see section 10), including in a piece SVG that might have been altered.
+- **The policy travels with the page :** A saved or forwarded copy, opened from disk, has no response headers. The page therefore repeats its policy in a `<meta http-equiv="Content-Security-Policy">` tag (no script, no network, inline styles only), so that an altered piece SVG stays inert in those copies too. The test suite checks the tag.
 
 ## 9. Browser dependencies
 
@@ -150,7 +151,14 @@ apache2ctl configtest && systemctl reload apache2
 ```
 
 - **The order matters :** `Header` is a directive of mod_headers, without the module `configtest` stops on `Invalid command 'Header'`. As long as `configtest` fails with the configuration enabled, a reload is refused and the running server carries on, but a restart or a reboot leaves Apache down. To back out halfway : `a2disconf staunton`. A reload is enough to load mod_headers.
-- **The paths :** The file expects the project in `/var/www/html/staunton` : adjust its four paths if it lives elsewhere.
+- **The paths :** The file expects the project in `/var/www/html/staunton` : adjust its three `<Directory>` paths if it lives elsewhere.
+- **Headers set elsewhere :** The file sets its headers with `Header always set`. A `Header set` (without `always`) for the same header in the virtual host or in `security.conf` is not overridden : Apache then sends both values, and a conflicting `Referrer-Policy` or `Content-Security-Policy` from the virtual host would apply alongside, the PDF included. Check that each of these headers is sent once :
+
+  ```
+  curl -sI https://example.org/staunton/ | grep -ciE '^(x-frame-options|referrer-policy|content-security-policy):'
+  ```
+
+  must print `3`. If not, write the virtual host directives with `always`, or add `Header unset` for the three headers at the top of the `<Directory>` section of this file. They are not shipped by default : they would erase a value the operator set on purpose for the whole site.
 - **`.git` is refused on the whole server**, for every clone below the document roots, not only for Staunton. Debian's `security.conf` offers an alternative, commented out : `RedirectMatch 404 /\.git`, which answers as if nothing were there.
 - **`Options -Indexes` wins** over a more general `Options Indexes`, such as Debian's default for `/var/www/` : the most specific `<Directory>` section applies.
 - **`lib/.htaccess` is redundant** with this configuration, and kept on purpose. Where `AllowOverride` lets Apache read it (Debian's default, `None`, does not), it refuses `lib/` on hosts whose server configuration cannot be edited, such as shared hosting. And it keeps `lib/` closed should PHP stop interpreting the files, after a PHP upgrade for instance: Apache would otherwise hand out their source.
@@ -235,7 +243,7 @@ nginx -t && nginx -s reload
 ```
 
 On FreeBSD, include the file from the `http` block of `/usr/local/etc/nginx/nginx.conf`.    
-In every case, adjust `server_name`, `root` and `fastcgi_pass` to your system. `server_tokens off`, in the file, already hides the version of nginx.
+In every case, adjust `server_name`, `root` and `fastcgi_pass` to your system, and, if the project is not served under `/staunton/`, the four rules that name that prefix : the regular expression of the `map $uri` block and the three `location` blocks for `lib/`, `vendor/` and `fetch-assets.sh`. Left as they are, those rules silently stop matching and `lib/`, `vendor/` and the script are served (the PHP lock still protects the files that exist in `lib/`). `server_tokens off`, in the file, already hides the version of nginx.
 
 The PHP location hands what follows the name of the script (`generate.php/diagram.pdf`) over to PHP in `PATH_INFO`, and the content security policy of the generated page covers both of its addresses. Apache needs nothing of the kind : mod_php and php-fpm both accept such addresses.
 
@@ -371,7 +379,7 @@ It covers:
 - Request parameters received as arrays, with no PHP warning.
 - HTML output : squares, side to move, round dot, long words broken, tags escaped, no link at all.
 - environment : PHP version, `ctype` and `xml`, TCPDF location, and a clear message for a missing, unsupported or unrunnable TCPDF.
-- PDF output : header, single page, hostile annotation, no link annotation, no address in the metadata, consistent XMP length, no user data in the metadata, annotation height and the 194 character limit.
+- PDF output : header, single page, hostile annotation, no link annotation, no address nor version in the metadata, consistent XMP length, no user data in the metadata, a right-to-left annotation without any PHP warning, annotation height and the 194 character limit.
 - Asset checksums : the checksums pinned in `fetch-assets.sh` cover the sixteen files and each of them matches; on a throwaway copy, the script accepts intact files, stops on an altered SVG or an incomplete list of checksums, checks the file listed last in its openssl branch too, and only goes ahead regardless on explicit request.
 - Input page : title, help card, thresholds consistent between `app.js` and `style.css`, English plurals, measured layout constants.
 - Front-end compatibility with jQuery 4.

@@ -830,6 +830,32 @@ if ($tcpdfUsable) {
     check('no address in UTF-16', str_contains($pdfBlack, $utf16), false);
     check('no address, blank sheet', str_contains($pdfWhite, $utf16), false);
 
+    // The version number goes as well: it would fingerprint the exact
+    // build of TCPDF, hence the release of the distribution.
+    $version      = TCPDF_STATIC::getTCPDFVersion();
+    $versionUtf16 = implode('', array_map(static fn (string $c): string => "\0" . $c, str_split($version)));
+    check('no TCPDF version in the metadata', str_contains($pdfBlack, 'TCPDF ' . $version), false);
+    check('no TCPDF version in UTF-16', str_contains($pdfBlack, $versionUtf16), false);
+
+    // A right-to-left letter followed by characters the core font cannot
+    // draw used to send TCPDF's bidi shaping through code points missing
+    // from its tables, two PHP warnings each: enough to flood the error
+    // log from a single request. The characters are mapped to '?' first.
+    $warnings = 0;
+    set_error_handler(static function () use (&$warnings): bool {
+        $warnings++;
+        return true;
+    });
+    $pdfBidi = chb_output_pdf(
+        '8/8/8/4k3/8/8/8/4K3',
+        'b',
+        chb_clean_notes("\u{0627}" . str_repeat("\u{1F600}", 193)),
+        true
+    );
+    restore_error_handler();
+    check('bidi annotation: no PHP warning', $warnings, 0);
+    check('bidi annotation: PDF produced', substr($pdfBidi, 0, 5), '%PDF-');
+
     // The XMP packet got shorter: its declared length must follow.
     $xmpOk = preg_match('#/Subtype /XML /Length (\d+) >> stream\n(.*?)\nendstream#s', $pdfBlack, $xmp) === 1
         && (int) $xmp[1] === strlen($xmp[2]);
@@ -1429,6 +1455,14 @@ if (PHP_SAPI === 'cli') {
         [$code, $page] = http_response($port, 'POST', '/generate.php', "fen=$start&format=html");
         check('CSP: no script in the generated page', [$code, preg_match('#<script\b#i', $page)], [200, 0]);
 
+        // The same policy travels inside the page, for the copies saved or
+        // forwarded, which the server header does not follow.
+        check(
+            'CSP: policy carried by the generated page itself',
+            preg_match('#<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; style-src \'unsafe-inline\'">#', $page),
+            1
+        );
+
         // The annotation is not read from the URL: it would end up in the
         // server logs, the browser history and those of any proxy. The FEN
         // and the side to move are enough to reopen a position.
@@ -1548,7 +1582,9 @@ if ($serverUrl === '') {
         'lib/test.php refused'              => ['lib/test.php', [403]],
         'no directory listing'              => ['assets/pieces/', [403]],
         '.git refused, or absent'           => ['.git/config', [403, 404]],
-        'vendor/ refused, or absent'        => ['vendor/staunton-probe', [403, 404]],
+        // A path that exists on every Composer installation: a probe that
+        // exists nowhere answers 404 whether vendor/ is refused or served.
+        'vendor/ refused, or absent'        => ['vendor/autoload.php', [403, 404]],
         'fetch-assets.sh refused, or absent' => ['fetch-assets.sh', [403, 404]],
         'nothing else after generate.php'    => ['generate.php/staunton-probe', [404]],
     ];

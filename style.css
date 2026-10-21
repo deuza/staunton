@@ -162,6 +162,13 @@ body {
 #board {
     width: clamp(280px, calc(80vh - 119px - 4.75rem), 460px);
     max-width: 100%;
+    /*
+     * Touch screens: chessboard.js drags the pieces with the finger itself,
+     * on the board and from the two palettes, which sit inside #board.
+     * Without this, the browser turns the gesture into a page scroll and the
+     * piece never moves.
+     */
+    touch-action: none;
 }
 
 /*

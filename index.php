@@ -187,7 +187,7 @@ function h(string $s): string
             <summary><h2>How to use</h2></summary>
             <p>
                 Drag a piece from either palette onto a square.
-                To remove a piece, click it without moving it,
+                To remove a piece, click (or tap) it without moving it,
                 or drag it off the board.
             </p>
             <p>

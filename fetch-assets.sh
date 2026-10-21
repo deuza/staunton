@@ -53,6 +53,10 @@ mkdir -p "${PIECES}"
 #
 # $1 source URL, $2 destination file.
 #
+# Files fetched by this run, removed again should their checksum fail:
+# a bad download must never stay in the served directory.
+downloaded=''
+
 fetch() {
     url="$1"
     destination="$2"
@@ -69,14 +73,22 @@ fetch() {
     # --retry 3 with --retry-delay 2 covers a host that answers 429 or 503
     # to a burst of requests. And --user-agent avoids being taken for an
     # anonymous robot by the services that filter curl's default agent.
+    #
+    # --proto and --proto-redir pin HTTPS, redirections included: a
+    # redirection to plain HTTP would otherwise be followed. The download
+    # lands in a .part file, moved into place only once complete.
     if ! curl -sSL --fail --max-time 60 \
+              --proto '=https' --proto-redir '=https' \
               --retry 3 --retry-delay 2 --retry-connrefused \
               --user-agent 'staunton/1.0 (local asset fetch)' \
-              -o "${destination}" "${url}"; then
+              -o "${destination}.part" "${url}"; then
         printf '  ! failed: %s\n' "${url}" >&2
-        rm -f "${destination}"
+        rm -f "${destination}.part"
         return 1
     fi
+
+    mv "${destination}.part" "${destination}"
+    downloaded="${downloaded} ${destination}"
 
     printf '  + %s (%s bytes)\n' "${destination}" "$(wc -c < "${destination}" | tr -d ' ')"
 }
@@ -281,7 +293,18 @@ else
     if [ "${code}" -ne 0 ]; then
         echo >&2
         echo '  Unexpected checksum: a file does not match its source.' >&2
-        echo '  Do not serve it. Delete it and run this script again.' >&2
+        # The files this run fetched are removed: served as they are, a
+        # tampered library or piece would reach every visitor. A file that
+        # was already present is left to its owner.
+        if [ -n "${downloaded}" ]; then
+            # Word splitting wanted: the paths contain no space.
+            # shellcheck disable=SC2086
+            rm -f ${downloaded}
+            echo '  The files fetched by this run have been removed.' >&2
+            echo '  Check your network and run this script again.' >&2
+        else
+            echo '  Do not serve it. Delete it and run this script again.' >&2
+        fi
         exit 1
     fi
 fi

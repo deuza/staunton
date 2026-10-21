@@ -131,10 +131,6 @@ const CHB_PDF_FEN_MARGIN = 40.0;
 final class ChessboardPdf extends TCPDF
 {
     /**
-     * Address that TCPDF appends to its name in the Producer field.
-     */
-    private const PRODUCER_LINK = ' (http://www.tcpdf.org)';
-    /**
      * @param string $orientation P or L.
      * @param string $unit        Unit of measure, points here.
      * @param string $format      Page format.
@@ -147,10 +143,15 @@ final class ChessboardPdf extends TCPDF
     }
 
     /**
-     * Writes a fragment of the document, rid of TCPDF's address.
+     * Writes a fragment of the document, rid of TCPDF's address and version.
      *
-     * Only structure objects are affected (state other than 2): the page
-     * content, and therefore the annotation typed in, is never touched.
+     * The guard (state other than 2) lets through every object written
+     * while the document is being closed, the page content streams
+     * included, since TCPDF writes them with state 1. The replacement can
+     * only match the information dictionary and the XMP packet all the
+     * same: in a page stream the annotation goes through a Tj operator,
+     * with its parentheses escaped, so the encoded producer string never
+     * occurs there, whatever the annotation says.
      *
      * @param string $s Fragment to write (TCPDF documents it as a string,
      *                  without declaring the type).
@@ -161,7 +162,10 @@ final class ChessboardPdf extends TCPDF
         // @phpstan-ignore function.alreadyNarrowedType
         if ($this->state !== 2 && is_string($s) && str_contains($s, 'Producer')) {
             $producer = TCPDF_STATIC::getTCPDFProducer();
-            $plain    = str_replace(self::PRODUCER_LINK, '', $producer);
+            // The bare name of the library: the address is a link to the
+            // outside, and the version number would fingerprint the exact
+            // build, hence the release of the distribution.
+            $plain = 'TCPDF';
 
             // Information dictionary: the string is encoded there by
             // _textstring(), in UTF-16BE with escaped parentheses. It is
@@ -402,6 +406,21 @@ function chb_output_pdf(
     // Without an annotation, a blank line ready to be filled in with a pen.
     $pdf->SetFont('helvetica', '', CHB_PDF_NOTES_PT);
     $pdf->SetTextColor(102, 102, 102);   // 0.40 x 255
+
+    // Map any character Helvetica cannot draw to the '?' TCPDF would print
+    // anyway, before the line is shaped. A right-to-left letter followed
+    // by code points missing from TCPDF's Unicode tables used to send its
+    // bidi algorithm through hundreds of "Undefined array key" warnings
+    // per request, enough to flood the error log. The allowed set is
+    // Latin-1 plus the 27 Windows-1252 code points of
+    // TCPDF_FONT_DATA::$uni_utf8tolatin, the glyphs the core font renders.
+    $notes = (string) preg_replace(
+        '/[^\x{0000}-\x{00FF}\x{0152}\x{0153}\x{0160}\x{0161}\x{0178}\x{017D}\x{017E}\x{0192}'
+        . '\x{02C6}\x{02DC}\x{2013}\x{2014}\x{2018}-\x{201A}\x{201C}-\x{201E}\x{2020}-\x{2022}'
+        . '\x{2026}\x{2030}\x{2039}\x{203A}\x{20AC}\x{2122}]/u',
+        '?',
+        $notes
+    );
 
     $notesLine = ($notes === '')
         ? 'Position / notes: ______________________________________'
