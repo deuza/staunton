@@ -36,9 +36,12 @@
  * let the page fit without a scrollbar on a 1600x900 screen, including
  * with Windows scaling at 125%, where the usable window drops to about
  * 1280x600 CSS px. Measured with the default font size of the browsers
- * (16 px), the page fits from 593 px of usable height (667 px below
+ * (16 px), the page fits from 598 px of usable height (671 px below
  * 1200 px of width, see the end of this file); a larger font size raises
- * these thresholds, see the board width below.
+ * these thresholds, see the board width below. That leaves 2 px to spare
+ * at 600 px: a taller header or footer brings the scrollbar back. Below
+ * these thresholds the form, not the board, sets the height of the page:
+ * shrinking the board no longer helps.
  */
 body {
     min-height: 100vh;
@@ -55,11 +58,17 @@ body {
 /* Header                                                           */
 /* --------------------------------------------------------------- */
 
+/*
+ * A line height of 1.2 instead of the 1.5 of the body: the title and the
+ * subtitle hold on one line each, and the header gives back about 13 px
+ * of height to the board (see its width below).
+ */
 .page-header {
     max-width: 1180px;
     margin: 0 auto 12px;
     color: #fff;
     text-align: center;
+    line-height: 1.2;
 }
 
 .page-header h1 {
@@ -141,26 +150,26 @@ body {
  * a scrollbar on a short screen.
  *
  * The formula comes from the vertical budget of the page, measured in a
- * browser: header, margins, button bar and palette gap take 226 px with
- * the default font size, and the board block is 1.25 times as high as it
- * is wide (ten squares for eight: the board and its two palettes). The
- * page therefore fits as long as that budget + 1.25 x width stays within
- * 100vh, that is a width of 80vh minus a constant.
+ * browser: header, margins, button bar, palette gap and footer take
+ * about 231 px with the default font size, and the board block is 1.25
+ * times as high as it is wide (ten squares for eight: the board and its
+ * two palettes). The page therefore fits as long as that budget + 1.25 x
+ * width stays within 100vh, that is a width of 80vh minus a constant.
  *
  * Part of the budget is set in rem (the header, the gap above the bottom
  * palette), so it grows with the font size chosen in the browser: the
  * constant is therefore made of pixels and rem. Measured pixel by pixel in
  * Chromium and Firefox, with chessboard.js rounding the square size down,
  * the smallest constant that never shows a scrollbar between the lowest
- * possible height and 1000 px is 185 px for a font size of 16 px, 204 px
- * for 20 px and 223 px for 24 px: 109 px + 4.75rem. 10 px of margin are
+ * possible height and 1000 px is 189 px for a font size of 16 px, 205 px
+ * for 20 px and 221 px for 24 px: 125 px + 4rem. 10 px of margin are
  * added, for font and browser differences. The width is capped at 460 px
  * at the top and 280 px at the bottom.
  *
  * app.js calls board.resize() again on resize, so the square size follows.
  */
 #board {
-    width: clamp(280px, calc(80vh - 119px - 4.75rem), 460px);
+    width: clamp(280px, calc(80vh - 135px - 4rem), 460px);
     max-width: 100%;
     /*
      * Touch screens: chessboard.js drags the pieces with the finger itself,
@@ -422,10 +431,13 @@ textarea {
 /*
  * White on the gradient, like the header. The links take the colour of
  * the text: the default blue of the browser reads badly on the violet.
+ * Line height of 1.2, like the header: the line counts in the height of
+ * the page (see the board width).
  */
 .page-footer {
     color: #fff;
     text-align: center;
+    line-height: 1.2;
 }
 
 .page-footer a {
@@ -446,15 +458,15 @@ textarea {
  * default font size, hence a board width of its own, with two bounds,
  * measured as above for font sizes of 16, 20 and 24 px:
  *
- *  - height: the smallest constant that never shows a scrollbar is 244,
- *    267 and 290 px, that is 152 px + 5.75rem; 10 px of margin are added;
+ *  - height: the smallest constant that never shows a scrollbar is 248,
+ *    268 and 288 px, that is 168 px + 5rem; 10 px of margin are added;
  *  - width: besides the board, the two cards and the margins take 468,
  *    474 and 481 px, that is about 441 px + 1.7rem (the frame of the
  *    coordinates); beyond that, the form drops below the board and the
  *    page can no longer fit. 10 px of margin are added.
  *
  * With the default font size, the page thus fits without a scrollbar from
- * 667 px of height, in any window at least 786 px wide: below that, the
+ * 671 px of height, in any window at least 786 px wide: below that, the
  * button bar under the board (345 px in the measuring browser, depending
  * on the font) already makes the board card too wide for the form to stay
  * beside it. Opening the card is the visitor's choice, and may bring the
@@ -467,7 +479,7 @@ textarea {
     }
 
     #board {
-        width: clamp(280px, min(80vh - 162px - 5.75rem, 100vw - 451px - 1.7rem), 460px);
+        width: clamp(280px, min(80vh - 178px - 5rem, 100vw - 451px - 1.7rem), 460px);
     }
 }
 

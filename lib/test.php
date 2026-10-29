@@ -1135,12 +1135,14 @@ check(
 check('English plurals in app.js', preg_match("#> 1 \? 's'#", $appSource), 0);
 
 // The board width constants come from measurements in a browser (see
-// style.css): changing one of them means measuring again.
+// style.css): changing one of them means measuring again. Measured again
+// once the footer had joined the page, with a line height of 1.2 in the
+// header and the footer.
 check(
     'board width constants unchanged since measured',
     [
-        str_contains($styleSource, 'calc(80vh - 119px - 4.75rem)'),
-        str_contains($styleSource, 'min(80vh - 162px - 5.75rem, 100vw - 451px - 1.7rem)'),
+        str_contains($styleSource, 'calc(80vh - 135px - 4rem)'),
+        str_contains($styleSource, 'min(80vh - 178px - 5rem, 100vw - 451px - 1.7rem)'),
     ],
     [true, true]
 );
