@@ -1089,6 +1089,11 @@ check(
     [true, false]
 );
 
+// The HTML Standard lists align on p among the obsolete attributes that
+// authors must not use, and points to CSS instead: the page leaves its
+// layout to style.css.
+check('no obsolete align attribute', preg_match('#<[^>]+\salign\s*=#i', $indexSource), 0);
+
 // The help card starts closed, and app.js opens it at start-up on a wide
 // screen. Its threshold must stay the one of the media query that moves
 // the card above the board: otherwise the card would open in the narrow
@@ -1447,6 +1452,12 @@ if (PHP_SAPI === 'cli') {
         $inline = array_values(array_filter($tags[1], static fn (string $a): bool => !str_contains($a, 'src=')));
         check('CSP: no inline script in index.php', [$code, $inline], [200, []]);
         check('CSP: no inline handler (on...=)', preg_match('#<[^>]+\son[a-z]+\s*=#i', $page), 0);
+
+        // The policy allows style="..." attributes for chessboard.js alone,
+        // which writes them at run time to size the board (see
+        // docs/hardening.md): the markup of the page carries none.
+        check('CSP: no style attribute in index.php', preg_match('#<[^>]+\sstyle\s*=#i', $page), 0);
+
         check(
             'CSP: initial position in a data-* attribute',
             str_contains($page, 'data-initial-fen="8/8/8/4k3/8/8/8/4K3"'),

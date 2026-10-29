@@ -200,6 +200,20 @@ function h(string $s): string
 
 </div>
 
+<!--
+    Styled by style.css only: the content security policy allows style
+    attributes for chessboard.js alone (see docs/hardening.md), and the
+    align attribute is obsolete. It comes before the scripts, so that it
+    is displayed without waiting for them.
+-->
+<footer class="page-footer">
+    With ❤️ by <a href="https://github.com/deuza">DeuZa</a> —
+    Program under licence
+    <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0</a>
+    available here :
+    <a href="https://github.com/deuza/staunton">github.com/deuza/staunton/</a>
+</footer>
+
 <script src="assets/jquery-3.7.1.min.js"></script>
 <script src="assets/chessboard-1.0.0.min.js"></script>
 <!--
@@ -209,14 +223,6 @@ function h(string $s): string
 -->
 <script type="module" src="chess-module.js"></script>
 <script src="app.js"></script>
-
-<p align="center" style="color: white;">
-  With ❤️ by <a href="https://github.com/deuza" style="color: white;">DeuZa</a> —
-  Program under licence
-  <a href="https://creativecommons.org/publicdomain/zero/1.0/" style="color: white;">CC0</a>
-  available here :
-  <a href="https://github.com/deuza/staunton" style="color: white;">github.com/deuza/staunton/</a>
-</p>
 
 </body>
 </html>

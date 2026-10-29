@@ -350,6 +350,8 @@ Both configurations were applied as they stand and checked this way : Apache 2.4
 
 The input page contains no inline script and no `on...=` handler, and the test suite makes sure of it : the values coming from PHP travel in `data-*` attributes, and chess.js is loaded by `chess-module.js`.
 
+Its markup carries no `style` attribute either, and the test suite checks that too : `style-src-attr 'unsafe-inline'` is there for chessboard.js alone, which writes such attributes at run time to size the board. The rest of the page, its footer included, is styled by `style.css`.
+
 `style-src-attr` belongs to CSP level 3 : Chrome 75, Firefox 108 and Safari 15.4 at least.    
 An older browser falls back on `style-src 'self'`, and the board is then displayed without dimensions.
 

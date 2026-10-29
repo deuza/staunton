@@ -416,6 +416,23 @@ textarea {
 }
 
 /* --------------------------------------------------------------- */
+/* Footer                                                           */
+/* --------------------------------------------------------------- */
+
+/*
+ * White on the gradient, like the header. The links take the colour of
+ * the text: the default blue of the browser reads badly on the violet.
+ */
+.page-footer {
+    color: #fff;
+    text-align: center;
+}
+
+.page-footer a {
+    color: inherit;
+}
+
+/* --------------------------------------------------------------- */
 /* Small screens                                                    */
 /* --------------------------------------------------------------- */
 
