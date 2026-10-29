@@ -214,7 +214,7 @@ function h(string $s): string
   With ❤️ by <a href="https://github.com/deuza" style="color: white;">DeuZa</a> —
   Program under licence
   <a href="https://creativecommons.org/publicdomain/zero/1.0/" style="color: white;">CC0</a>
-  disponible here :
+  available here :
   <a href="https://github.com/deuza/staunton" style="color: white;">github.com/deuza/staunton/</a>
 </p>
 

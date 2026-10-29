@@ -1073,10 +1073,20 @@ $indexSource = (string) file_get_contents(dirname(__DIR__) . '/index.php');
 $appSource   = (string) file_get_contents(dirname(__DIR__) . '/app.js');
 $styleSource = (string) file_get_contents(dirname(__DIR__) . '/style.css');
 
+// The tab bears the name of the application, the heading the name of the
+// page: the two differ on purpose.
 check(
     'title and heading',
-    [str_contains($indexSource, '<title>Board editor</title>'), str_contains($indexSource, '<h1>Board editor</h1>')],
+    [str_contains($indexSource, '<title>Staunton</title>'), str_contains($indexSource, '<h1>Board editor</h1>')],
     [true, true]
+);
+
+// The page is written in English, its footer included: a French word had
+// slipped into it.
+check(
+    'footer in English',
+    [str_contains($indexSource, 'available here'), str_contains($indexSource, 'disponible')],
+    [true, false]
 );
 
 // The help card starts closed, and app.js opens it at start-up on a wide
@@ -1459,7 +1469,11 @@ if (PHP_SAPI === 'cli') {
         // forwarded, which the server header does not follow.
         check(
             'CSP: policy carried by the generated page itself',
-            preg_match('#<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; style-src \'unsafe-inline\'">#', $page),
+            preg_match(
+                '#<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; '
+                . 'style-src \'unsafe-inline\'">#',
+                $page
+            ),
             1
         );
 
